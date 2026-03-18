@@ -1,4 +1,5 @@
 // Update error message based on login attempt
+
 async function checkLoginAttempts() {
     const response = await fetch("../json/login_attempt.json");
     const form_data = await response.json();
@@ -18,18 +19,18 @@ async function checkLoginAttempts() {
         error_msg.classList.add("error");
         document.querySelector("#login_btn").parentNode.insertBefore(error_msg, document.querySelector("#login_btn"));
 
-    } else if(form_data.username !== "username") { // Inform user they have entered the incorrect username
+    } else if(form_data.username !== "username") { // Inform user they have entered the incorrect username (changed to become more generic)
         if(document.getElementById("login_error") !== null) {
             document.getElementById("login_error").parentNode.removeChild(document.getElementById("login_error"));
         }
 
         let error_msg = document.createElement("p");
         error_msg.id = "login_error";
-        error_msg.textContent = "Incorrect username.";
+        error_msg.textContent = "Incorrect username or password.";
         error_msg.classList.add("error");
         document.querySelector("#login_btn").parentNode.insertBefore(error_msg, document.querySelector("#login_btn"));
 
-    } else if(form_data.password !== "password") { // Inform user they have entered the incorrect password
+    } else if(form_data.password !== "password") { // Inform user they have entered the incorrect password (changed to become more generic)
 
         if(document.getElementById("login_error") !== null) {
             document.getElementById("login_error").parentNode.removeChild(document.getElementById("login_error"));
@@ -37,7 +38,7 @@ async function checkLoginAttempts() {
 
         let error_msg = document.createElement("p");
         error_msg.id = "login_error";
-        error_msg.textContent = "Incorrect password.";
+        error_msg.textContent = "Incorrect username or password."; // Inform user they have entered the incorrect password (changed to become more generic)
         error_msg.classList.add("error");
         document.querySelector("#login_btn").parentNode.insertBefore(error_msg, document.querySelector("#login_btn"));
 
