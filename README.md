@@ -4,4 +4,13 @@ Novex finance is a web based blog targeted towards investors and general users w
 The aim of this repository is to test and learn different penetration techniques and vulnerabilities that could affect a web based system. 
 
 
-How to set up:
+How to set up (from terminal): 
+1. npm install 
+2. cd app
+3. node app.js
+
+
+
+
+
+
