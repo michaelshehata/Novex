@@ -31,10 +31,29 @@ app.get('/', (req, res) => {
     })
 });
 
-// Reset login_attempt.json when server restarts
-let login_attempt = {"username" : "null", "password" : "null"};
-let data = JSON.stringify(login_attempt);
-fs.writeFileSync(__dirname + '/public/json/login_attempt.json', data);
+app.get('/api/session', async (req, res) => {
+    if (!req.session.userId) {
+        return res.json({ loggedIn: false, userId: null, username: null });
+    }
+    try {
+        const result = await pool.query(
+            'SELECT id, username FROM users WHERE id = $1',
+            [req.session.userId]
+        );
+        if (result.rows.length === 0) {
+            return res.json({ loggedIn: false, userId: null, username: null });
+        }
+        const row = result.rows[0];
+        res.json({
+            loggedIn: true,
+            userId: row.id,
+            username: row.username,
+        });
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+});
 
 // Single login route using DB (removed old hardcoded logic)
 app.post('/', async function(req, res){

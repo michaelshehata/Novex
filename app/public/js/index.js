@@ -5,9 +5,6 @@ async function loadLatestPosts() {
     const post_response = await fetch("../json/posts.json");
     const post_data = await post_response.json();
 
-    const login_response = await fetch("../json/login_attempt.json");
-    const login_data = await login_response.json();
-
     // Remove current posts from page
     let postList = document.getElementById('postsList');
 

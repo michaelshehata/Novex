@@ -1,12 +1,10 @@
 // Function to load posts made by user who is currently logged in
+
 async function loadPosts() {
 
     // Load posts data
     const post_response = await fetch("../json/posts.json");
     const post_data = await post_response.json();
-
-    const login_response = await fetch("../json/login_attempt.json");
-    const login_data = await login_response.json();
 
     let postList = document.getElementById('postsList');
 

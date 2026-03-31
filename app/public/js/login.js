@@ -1,52 +1,17 @@
-// Update error message based on login attempt
+// Client side check only, server uses the same response for failed login .
 
-async function checkLoginAttempts() {
-    const response = await fetch("../json/login_attempt.json");
-    const form_data = await response.json();
+document.getElementById('login_form')?.addEventListener('submit', function (e) {
+    const username = document.getElementById('username_input').value.trim();
+    const password = document.getElementById('password_input').value;
 
-    // Inform user they need to fill out the fields on the login form
-    if(form_data.username === "null" || form_data.password === "null") {
-        document.getElementById("login_error").parentNode.removeChild(document.getElementById("login_error"));
+    if (!username || !password) {
+        e.preventDefault();
+        let el = document.getElementById('login_error');
+        if (el) el.remove();
+        el = document.createElement('p');
+        el.id = 'login_error';
+        el.textContent = 'Please fill out the login fields.';
+        el.classList.add('error');
+        document.querySelector('#login_btn').parentNode.insertBefore(el, document.querySelector('#login_btn'));
     }
-    if(form_data.username === "" || form_data.password === "") {
-        if(document.getElementById("login_error") !== null) {
-            document.getElementById("login_error").parentNode.removeChild(document.getElementById("login_error"));
-        }
-
-        let error_msg = document.createElement("p");
-        error_msg.id = "login_error";
-        error_msg.textContent = "Please fill out the login fields.";
-        error_msg.classList.add("error");
-        document.querySelector("#login_btn").parentNode.insertBefore(error_msg, document.querySelector("#login_btn"));
-
-    } else if(form_data.username !== "username") { // Inform user they have entered the incorrect username (changed to become more generic)
-        if(document.getElementById("login_error") !== null) {
-            document.getElementById("login_error").parentNode.removeChild(document.getElementById("login_error"));
-        }
-
-        let error_msg = document.createElement("p");
-        error_msg.id = "login_error";
-        error_msg.textContent = "Incorrect username or password.";
-        error_msg.classList.add("error");
-        document.querySelector("#login_btn").parentNode.insertBefore(error_msg, document.querySelector("#login_btn"));
-
-    } else if(form_data.password !== "password") { 
-
-        if(document.getElementById("login_error") !== null) {
-            document.getElementById("login_error").parentNode.removeChild(document.getElementById("login_error"));
-        }
-
-        let error_msg = document.createElement("p");
-        error_msg.id = "login_error";
-        error_msg.textContent = "Incorrect username or password."; // Inform user they have entered the incorrect password (changed to become more generic)
-        error_msg.classList.add("error");
-        document.querySelector("#login_btn").parentNode.insertBefore(error_msg, document.querySelector("#login_btn"));
-
-    } else {
-        if(document.getElementById("login_error") !== null) {
-            document.getElementById("login_error").parentNode.removeChild(document.getElementById("login_error"));
-        }
-    }
-}
-
-checkLoginAttempts();
+});
