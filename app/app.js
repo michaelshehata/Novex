@@ -6,6 +6,7 @@ const argon2 = require('argon2'); // for password hashing
 const session = require('express-session'); // for session management
 const crypto = require('crypto');
 
+
 const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 if (!process.env.SESSION_SECRET) {
     console.warn('SESSION_SECRET is not set; using ephemeral secret for this runtime only.');
@@ -71,7 +72,11 @@ app.post('/logout', (req, res) => {
             console.error(err);
             return res.sendStatus(500);
         }
-        res.clearCookie('connect.sid');
+        res.clearCookie('connect.sid', {
+            path: '/',
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production'
+        });
         res.sendStatus(204);
     });
 });
