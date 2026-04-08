@@ -75,7 +75,8 @@ app.post('/logout', (req, res) => {
         res.clearCookie('connect.sid', {
             path: '/',
             sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'production'
+            secure: process.env.NODE_ENV === 'production',
+            httpOnly: true
         });
         res.sendStatus(204);
     });
