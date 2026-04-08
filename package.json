@@ -1,8 +1,8 @@
 {
   "scripts": {
     "measure-login": "node scripts/login_times.js",
-    "db:test": "node scripts/test-db.js",
-    "db:seed-user": "node scripts/seed-user.js"
+    "db:test": "node scripts/test_db.js",
+    "db:seed-user": "node scripts/seed_user.js"
   },
   "devDependencies": {
     "express": "^4.21.1"
