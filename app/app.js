@@ -1,16 +1,14 @@
-const express = require('express')
-const pool = require('./database/database'); // database connection
-const argon2 = require('argon2'); // for password hashing
-const session = require('express-session'); // for session management
+const express = require('express');
+const session = require('express-session');
 const crypto = require('crypto');
+const path = require('path');
 
 // Routes
-const authRoutes = require('./authentication/authRoutes');
-const postRoutes = require('./routes/postRoutes');
+const authRoutes = require('../authentication/authRoutes');
 
 // Middleware
-const rateLimiter = require('./middleware/rateLimiter');
-const csrfProtection = require('./middleware/csrfProtection');
+const rateLimiter = require('../middleware/rateLimiter');
+// const csrfProtection = require('../middleware/csrfProtection'); // TEMP disabled
 
 const app = express();
 const port = 3000;
@@ -32,7 +30,7 @@ app.use(session({
         httpOnly: true,
         maxAge: 15 * 60 * 1000,
         sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production'
+        secure: false // keep false for local testing
     }
 }));
 
@@ -41,44 +39,24 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Static frontend
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Security middleware
-// Rate limit login (prevents brute force + enumeration)
 app.use('/auth/login', rateLimiter);
 
-// CSRF protection (must come AFTER session)
-app.use(csrfProtection);
+// app.use(csrfProtection); // enable later
+
 
 // Routes
 app.use('/auth', authRoutes);
-app.use('/posts', postRoutes);
 
 
 // Basic routes
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/html/login.html'));
 });
-
-// Session check (used by frontend)
-app.get('/api/session', (req, res) => {
-    if (!req.session.userId) {
-        return res.json({ loggedIn: false });
-    }
-    res.json({ loggedIn: true, userId: req.session.userId });
-});
-
-// Logout
-app.post('/logout', (req, res) => {
-    req.session.destroy(err => {
-        if (err) return res.sendStatus(500);
-        res.clearCookie('connect.sid');
-        res.sendStatus(204);
-    });
-});
-
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);

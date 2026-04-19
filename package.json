@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "argon2": "^0.44.0",
+    "csurf": "^1.11.0",
     "dotenv": "^16.6.1",
     "env": "^0.0.2",
     "express-rate-limit": "^8.3.2",

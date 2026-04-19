@@ -1,3 +1,8 @@
 const csrf = require('csurf');
 
-module.exports = csrf();
+// using session based CSRF 
+const csrfProtection = csrf({
+    cookie: false
+});
+
+module.exports = csrfProtection;
