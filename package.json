@@ -11,6 +11,7 @@
     "argon2": "^0.44.0",
     "dotenv": "^16.6.1",
     "env": "^0.0.2",
+    "express-rate-limit": "^8.3.2",
     "express-session": "^1.19.0",
     "pg": "^8.20.0"
   }
