@@ -3,7 +3,7 @@
  */
 
 const argon2 = require('argon2');
-const pool = require('../app/database/database');
+const pool = require('../database/database');
 
 async function main() {
   const username = process.argv[2];
