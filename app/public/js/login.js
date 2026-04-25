@@ -1,16 +1,35 @@
 // Client side check only, server uses the same response for failed login .
 
+let csrfTokenLoaded = false;
+let csrfTokenLoadFailed = false;
+
 async function loadCsrfToken() {
     const tokenInput = document.getElementById('csrf_token');
     if (!tokenInput) return;
 
+    const loginButton = document.getElementById('login_btn');
+    if (loginButton) {
+        loginButton.disabled = true;
+    }
+
+
     try {
         const response = await fetch('/auth/csrf-token');
-        if (!response.ok) return;
+        if (!response.ok) {
+            csrfTokenLoadFailed = true;
+            return;
+        }
 
         const data = await response.json();
         tokenInput.value = data.csrfToken;
+        csrfTokenLoaded = true;
+        csrfTokenLoadFailed = false;
+
+        if (loginButton) {
+            loginButton.disabled = false;
+        }
     } catch (err) {
+        csrfTokenLoadFailed = true;
         console.error('Failed to load CSRF token:', err);
     }
 }
@@ -18,6 +37,19 @@ async function loadCsrfToken() {
 document.getElementById('login_form')?.addEventListener('submit', function (e) {
     const username = document.getElementById('username_input').value.trim();
     const password = document.getElementById('password_input').value;
+    const token = document.getElementById('csrf_token').value;
+
+    if (!csrfTokenLoaded || !token || csrfTokenLoadFailed) {
+        e.preventDefault();
+        let el = document.getElementById('login_error');
+        if (el) el.remove();
+        el = document.createElement('p');
+        el.id = 'login_error';
+        el.textContent = 'Security token is still loading. Please wait a moment and try again.';
+        el.classList.add('error');
+        document.querySelector('#login_btn').parentNode.insertBefore(el, document.querySelector('#login_btn'));
+        return;
+    }
 
     if (!username || !password) {
         e.preventDefault();

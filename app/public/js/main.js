@@ -1,9 +1,15 @@
 async function displayUsername() {
-    const response = await fetch('/api/session');
-    const data = await response.json();
-    const link = document.querySelector('#login_link');
-    if (!link) return;
-    link.textContent = data.loggedIn && data.username ? data.username : 'Guest';
+    try {
+        const response = await fetch('/api/session');
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = document.querySelector('#login_link');
+        if (!link) return;
+        link.textContent = data.loggedIn && data.username ? data.username : 'Guest';
+    } catch (err) {
+        console.error('Failed to load session state:', err);
+    }
 }
 
 
@@ -29,7 +35,12 @@ function setupLogout() {
         event.preventDefault();
         try {
             const csrfToken = await getCsrfToken();
-            const headers = csrfToken ? { 'x-csrf-token': csrfToken } : {};
+            if (!csrfToken) {
+                console.error('Logout blocked because the CSRF token could not be loaded.');
+                return;
+            }
+
+            const headers = { 'x-csrf-token': csrfToken };
             const response = await fetch('/logout', { method: 'POST', headers });
             if (response.ok) {
                 window.location.href = '/html/login.html';

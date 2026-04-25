@@ -52,6 +52,7 @@ app.use(csrfProtection);
 // Routes
 app.use('/auth', authRoutes);
 
+
 app.get('/api/session', async (req, res) => {
     if (!req.session.userId) {
         return res.json({ loggedIn: false, userId: null, username: null });
@@ -64,7 +65,14 @@ app.get('/api/session', async (req, res) => {
         );
 
         if (result.rows.length === 0) {
-            return res.json({ loggedIn: false, userId: null, username: null });
+            return req.session.destroy(() => {
+                res.clearCookie('connect.sid', {
+                    httpOnly: true,
+                    sameSite: 'lax',
+                    secure: false,
+                });
+                res.json({ loggedIn: false, userId: null, username: null });
+            });
         }
 
         const user = result.rows[0];
@@ -78,6 +86,8 @@ app.get('/api/session', async (req, res) => {
         res.sendStatus(500);
     }
 });
+
+
 
 app.post('/logout', (req, res) => {
     req.session.destroy((err) => {
@@ -106,6 +116,7 @@ app.use((err, req, res, next) => {
         return res.sendStatus(403);
     }
 
+    
     console.error(err);
     res.sendStatus(500);
 });
