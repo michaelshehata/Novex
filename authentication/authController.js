@@ -2,7 +2,8 @@ const pool = require('../database/database');
 const { hashPassword, verifyPassword } = require('../utils/hashing');
 
 exports.login = async (req, res) => {
-  const { username, password } = req.body;
+  const username = req.body.username || req.body.username_input;
+  const password = req.body.password || req.body.password_input;
 
   try {
     const result = await pool.query(
@@ -25,9 +26,15 @@ exports.login = async (req, res) => {
       return res.status(401).send("Invalid email or password");
     }
 
-    req.session.userId = user.id;
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error(err);
+        return res.sendStatus(500);
+      }
 
-    res.send("Login successful");
+      req.session.userId = user.id;
+      res.redirect(303, '/html/index.html');
+    });
 
   } catch (err) {
     console.error(err);
@@ -36,14 +43,20 @@ exports.login = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-  const { username , password } = req.body;
+  const username = req.body.username || req.body.username_input;
+  const password = req.body.password || req.body.password_input;
+  const email = req.body.email || username;
+
+  if (!username || !password) {
+    return res.status(400).send('Username and password are required');
+  }
 
   try {
     const hashed = await hashPassword(password);
 
     await pool.query(
-      "INSERT INTO users (email, password) VALUES ($1, $2)",
-      [email, hashed]
+      "INSERT INTO users (username, email, password) VALUES ($1, $2, $3)",
+      [username, email, hashed]
     );
 
     res.send("User registered");
