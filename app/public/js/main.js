@@ -7,6 +7,20 @@ async function displayUsername() {
 }
 
 
+async function getCsrfToken() {
+    try {
+        const response = await fetch('/auth/csrf-token');
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        return data.csrfToken;
+    } catch (err) {
+        console.error('Failed to fetch CSRF token:', err);
+        return null;
+    }
+}
+
+
 function setupLogout() {
     const logoutButton = document.querySelector('#logout_btn');
     if (!logoutButton) return;
@@ -14,7 +28,9 @@ function setupLogout() {
     logoutButton.addEventListener('click', async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch('/logout', { method: 'POST' });
+            const csrfToken = await getCsrfToken();
+            const headers = csrfToken ? { 'x-csrf-token': csrfToken } : {};
+            const response = await fetch('/logout', { method: 'POST', headers });
             if (response.ok) {
                 window.location.href = '/html/login.html';
             } else {

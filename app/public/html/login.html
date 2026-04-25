@@ -16,6 +16,7 @@
         <p>Please enter your username and password to continue:</p>
 
         <form method="post" action="/auth/login" id="login_form">
+            <input type="hidden" id="csrf_token" name="_csrf" value="">
             <label for="username_input">Username:</label>
             <input type="text" id="username_input" name="username" placeholder="Please enter your username...">
 
