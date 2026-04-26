@@ -1,13 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-const crypto = require('crypto');
 const path = require('path');
 const pool = require('../database/database');
 
 
 // Routes
 const authRoutes = require('../authentication/authRoutes');
+const postRoutes = require('../routes/postRoutes');
 
 // Middleware
 const rateLimiter = require('../middleware/rateLimiter');
@@ -16,25 +16,26 @@ const csrfProtection = require('../middleware/csrfProtection');
 const app = express();
 const port = 3000;
 
+// Utilities
+const { decrypt } = require('../utils/encrypt_db');
+
 
 // Session setup
-const sessionSecret = process.env.SESSION_SECRET 
-
 if (!process.env.SESSION_SECRET) {
-    console.warn('SESSION_SECRET key not set');
+    throw new Error('SESSION_SECRET not set');
 }
 
 app.use(session({
-    name: 'sid', 
+    name: 'sid',
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    rolling: true, // session expires after request inactivity not time
+    rolling: true,
     cookie: {
-        httpOnly: true, // prevents client side JS from accessing the cookie (xss prevention)
-        maxAge: 15 * 60 * 1000, 
+        httpOnly: true,
+        maxAge: 15 * 60 * 1000,
         sameSite: 'lax',
-        secure: false // keep false for local testing
+        secure: false
     }
 }));
 
@@ -49,11 +50,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Security middleware
 app.use('/auth/login', rateLimiter);
-app.use(csrfProtection);
+app.use('/posts', csrfProtection);
+app.use('/auth/login', csrfProtection);
+app.use('/auth/register', csrfProtection);
+
 
 
 // Routes
 app.use('/auth', authRoutes);
+app.use('/posts', postRoutes);
+
 
 
 app.get('/api/session', async (req, res) => {
@@ -63,13 +69,13 @@ app.get('/api/session', async (req, res) => {
 
     try {
         const result = await pool.query(
-            'SELECT id, username FROM users WHERE id = $1',
+            'SELECT id, username, email FROM users WHERE id = $1',
             [req.session.userId]
         );
 
         if (result.rows.length === 0) {
             return req.session.destroy(() => {
-                res.clearCookie('connect.sid', {
+                res.clearCookie('sid', {
                     httpOnly: true,
                     sameSite: 'lax',
                     secure: false,
@@ -79,17 +85,19 @@ app.get('/api/session', async (req, res) => {
         }
 
         const user = result.rows[0];
+
         res.json({
             loggedIn: true,
             userId: user.id,
             username: user.username,
+            email: decrypt(user.email)
         });
+
     } catch (err) {
         console.error(err);
         res.sendStatus(500);
     }
 });
-
 
 
 app.post('/logout', (req, res) => {
@@ -99,7 +107,7 @@ app.post('/logout', (req, res) => {
             return res.sendStatus(500);
         }
 
-        res.clearCookie('connect.sid', {
+        res.clearCookie('sid', {
             httpOnly: true,
             sameSite: 'lax',
             secure: false,
@@ -119,7 +127,6 @@ app.use((err, req, res, next) => {
         return res.sendStatus(403);
     }
 
-    
     console.error(err);
     res.sendStatus(500);
 });

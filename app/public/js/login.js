@@ -34,33 +34,59 @@ async function loadCsrfToken() {
     }
 }
 
-document.getElementById('login_form')?.addEventListener('submit', function (e) {
+document.getElementById('login_form')?.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
     const username = document.getElementById('username_input').value.trim();
     const password = document.getElementById('password_input').value;
     const token = document.getElementById('csrf_token').value;
 
+    let el = document.getElementById('login_error');
+    if (el) el.remove();
+
     if (!csrfTokenLoaded || !token || csrfTokenLoadFailed) {
-        e.preventDefault();
-        let el = document.getElementById('login_error');
-        if (el) el.remove();
         el = document.createElement('p');
         el.id = 'login_error';
-        el.textContent = 'Security token is still loading. Please wait a moment and try again.';
+        el.textContent = 'Security token is still loading. Please wait.';
         el.classList.add('error');
         document.querySelector('#login_btn').parentNode.insertBefore(el, document.querySelector('#login_btn'));
         return;
     }
 
     if (!username || !password) {
-        e.preventDefault();
-        let el = document.getElementById('login_error');
-        if (el) el.remove();
         el = document.createElement('p');
         el.id = 'login_error';
         el.textContent = 'Please fill out the login fields.';
         el.classList.add('error');
         document.querySelector('#login_btn').parentNode.insertBefore(el, document.querySelector('#login_btn'));
+        return;
+    }
+
+    try {
+        const response = await fetch('/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username,
+                password,
+                _csrf: token
+            })
+        });
+
+        if (response.ok) {
+            window.location.href = '/html/index.html';
+        } else {
+            const text = await response.text();
+            el = document.createElement('p');
+            el.id = 'login_error';
+            el.textContent = text;
+            el.classList.add('error');
+            document.querySelector('#login_btn').parentNode.insertBefore(el, document.querySelector('#login_btn'));
+        }
+
+    } catch (err) {
+        console.error(err);
     }
 });
-
-loadCsrfToken();

@@ -1,3 +1,5 @@
+// Handles authentication routes like login and registration. Also provides a route to get the CSRF token for forms.
+
 const express = require('express');
 const router = express.Router(); 
 

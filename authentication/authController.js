@@ -1,4 +1,5 @@
 const pool = require('../database/database');
+const { encrypt } = require('../utils/encrypt_db');
 const { hashPassword, verifyPassword } = require('../utils/hashing');
 
 exports.login = async (req, res) => {
@@ -23,7 +24,7 @@ exports.login = async (req, res) => {
     const valid = await verifyPassword(passwordToCheck, password);
 
     if (!user || !valid) {
-      return res.status(401).send("Invalid email or password");
+      return res.status(401).send("Invalid username or password");
     }
 
     req.session.regenerate((err) => {
@@ -33,7 +34,7 @@ exports.login = async (req, res) => {
       }
 
       req.session.userId = user.id;
-      res.redirect(303, '/html/index.html');
+      res.sendStatus(200);
     });
 
   } catch (err) {
@@ -54,15 +55,21 @@ exports.register = async (req, res) => {
   try {
     const hashed = await hashPassword(password);
 
+    const encryptedEmail = encrypt(email);
+
     await pool.query(
       "INSERT INTO users (username, email, password) VALUES ($1, $2, $3)",
-      [username, email, hashed]
+      [username, encryptedEmail, hashed]
     );
 
-    res.send("User registered");
+    return res.status(201).send("User registered");
 
   } catch (err) {
+    if (err.code === '23505') {
+      return res.status(400).send("Username already exists");
+    }
+
     console.error(err);
-    res.sendStatus(500);
+    return res.sendStatus(500);
   }
 };

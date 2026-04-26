@@ -1,4 +1,4 @@
-const pool = require('./database');
+const pool = require('../database/database');
 
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {

@@ -1,3 +1,5 @@
+// Used to hash and verify passwords using argon2, passwords never stored as plain text
+
 const argon2 = require('argon2');
 
 exports.hashPassword = async (password) => {
