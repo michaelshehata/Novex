@@ -1,8 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const crypto = require('crypto');
 const path = require('path');
 const pool = require('../database/database');
+
 
 // Routes
 const authRoutes = require('../authentication/authRoutes');
@@ -16,20 +18,21 @@ const port = 3000;
 
 
 // Session setup
-const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+const sessionSecret = process.env.SESSION_SECRET 
 
 if (!process.env.SESSION_SECRET) {
-    console.warn('SESSION_SECRET not set (dev only)');
+    console.warn('SESSION_SECRET key not set');
 }
 
 app.use(session({
-    secret: sessionSecret,
+    name: 'sid', 
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    rolling: true,
+    rolling: true, // session expires after request inactivity not time
     cookie: {
-        httpOnly: true,
-        maxAge: 15 * 60 * 1000,
+        httpOnly: true, // prevents client side JS from accessing the cookie (xss prevention)
+        maxAge: 15 * 60 * 1000, 
         sameSite: 'lax',
         secure: false // keep false for local testing
     }
