@@ -1,7 +1,7 @@
-const csrf = require('csurf');
+const {doubleCsrf} = require('csrf-csrf');
 
 // using session based CSRF 
-const csrfProtection = csrf({
+const csrfProtection = doubleCsrf({
     cookie: false
 });
 

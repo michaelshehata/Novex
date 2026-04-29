@@ -16,8 +16,12 @@ const csrfProtection = require('../middleware/csrfProtection');
 const app = express();
 const port = 3000;
 
+// Authenticator 
+const multiFactorAuth = require('../authentication/multiFactorAuth');
+
 // Utilities
 const { decrypt } = require('../utils/encrypt_db');
+const { qrcode } = require('../utils/qrcode');
 
 
 // Session setup
@@ -53,7 +57,6 @@ app.use('/auth/login', rateLimiter);
 app.use('/posts', csrfProtection);
 app.use('/auth/login', csrfProtection);
 app.use('/auth/register', csrfProtection);
-
 
 
 // Routes

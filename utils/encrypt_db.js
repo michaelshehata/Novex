@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 
+
 const algorithm = 'aes-256-cbc';
 const key = crypto.createHash('sha256').update(process.env.ENCRYPTION_KEY).digest();
 const iv = Buffer.alloc(16, 0);

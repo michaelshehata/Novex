@@ -1,7 +1,7 @@
 // Client side check only, server uses the same response for failed login .
 
-let csrfTokenLoaded = false;
-let csrfTokenLoadFailed = false;
+let csrfTokenLoaded = True;
+let csrfTokenLoadFailed = True;
 
 async function loadCsrfToken() {
     const tokenInput = document.getElementById('csrf_token');
