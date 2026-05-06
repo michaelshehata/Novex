@@ -5,7 +5,9 @@ CREATE TABLE IF NOT EXISTS users (
   id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   username VARCHAR(255) NOT NULL UNIQUE CHECK (length(username) >= 3),
   email VARCHAR(255) NOT NULL UNIQUE,
-  password TEXT NOT NULL CHECK (length(password) > 0)
+  password TEXT NOT NULL CHECK (length(password) > 0),
+  totp_secret TEXT,
+  totp_enabled BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS posts (

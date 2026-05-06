@@ -11,7 +11,8 @@ const authRoutes = require('../authentication/authRoutes');
 const postRoutes = require('../routes/postRoutes');
 
 // Middleware
-const rateLimiter = require('../middleware/rateLimiter');
+const loginLimiter = require('../middleware/rateLimiter');
+const registerLimiter = loginLimiter.registerLimiter;
 const csrfProtection = require('../middleware/csrfProtection');
 
 const app = express();
@@ -24,6 +25,10 @@ const { decrypt } = require('../utils/encrypt_db');
 // Session setup
 if (!process.env.SESSION_SECRET) {
     throw new Error('SESSION_SECRET not set');
+}
+
+if (!process.env.ENCRYPTION_KEY || process.env.ENCRYPTION_KEY.length < 8) {
+    throw new Error('ENCRYPTION_KEY must be set to a sufficiently long secret');
 }
 
 app.use(session({
@@ -51,7 +56,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Security middleware
-app.use('/auth/login', rateLimiter);
+app.use('/auth/login', loginLimiter);
+app.use('/auth/register', registerLimiter);
 app.use('/auth', csrfProtection);
 app.use('/posts', csrfProtection);
 
@@ -69,7 +75,7 @@ app.get('/api/session', async (req, res) => {
 
     try {
         const result = await pool.query(
-            'SELECT id, username, email FROM users WHERE id = $1',
+            'SELECT id, username, email, totp_enabled FROM users WHERE id = $1',
             [req.session.userId]
         );
 
@@ -90,7 +96,8 @@ app.get('/api/session', async (req, res) => {
             loggedIn: true,
             userId: user.id,
             username: user.username,
-            email: decrypt(user.email)
+            email: decrypt(user.email),
+            totpEnabled: Boolean(user.totp_enabled),
         });
 
     } catch (err) {
