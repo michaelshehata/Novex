@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const pool = require('../database/database');
 
@@ -16,12 +17,8 @@ const csrfProtection = require('../middleware/csrfProtection');
 const app = express();
 const port = 3000;
 
-// Authenticator 
-const multiFactorAuth = require('../authentication/multiFactorAuth');
-
 // Utilities
 const { decrypt } = require('../utils/encrypt_db');
-const { qrcode } = require('../utils/qrcode');
 
 
 // Session setup
@@ -43,8 +40,9 @@ app.use(session({
     }
 }));
 
+app.use(cookieParser());
 
-// Core middleware
+// Core middleware (body parsers before CSRF so tokens in JSON bodies are visible)
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -54,9 +52,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Security middleware
 app.use('/auth/login', rateLimiter);
+app.use('/auth', csrfProtection);
 app.use('/posts', csrfProtection);
-app.use('/auth/login', csrfProtection);
-app.use('/auth/register', csrfProtection);
 
 
 // Routes
