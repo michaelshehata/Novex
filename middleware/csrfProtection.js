@@ -8,7 +8,7 @@ const { doubleCsrfProtection } = doubleCsrf({
     return process.env.SESSION_SECRET;
   },
   getSessionIdentifier: (req) => req.sessionID,
-  cookieName: 'psifi.x-csrf-token',
+  cookieName: 'csrf-token',
   cookieOptions: {
     httpOnly: true,
     sameSite: 'lax',

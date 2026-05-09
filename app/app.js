@@ -41,7 +41,7 @@ app.use(session({
         httpOnly: true,
         maxAge: 15 * 60 * 1000,
         sameSite: 'lax',
-        secure: false
+        secure: process.env.NODE_ENV === 'production'
     }
 }));
 
@@ -67,7 +67,6 @@ app.use('/auth', authRoutes);
 app.use('/posts', postRoutes);
 
 
-
 app.get('/api/session', async (req, res) => {
     if (!req.session.userId) {
         return res.json({ loggedIn: false, userId: null, username: null });
@@ -84,7 +83,7 @@ app.get('/api/session', async (req, res) => {
                 res.clearCookie('sid', {
                     httpOnly: true,
                     sameSite: 'lax',
-                    secure: false,
+                    secure: process.env.NODE_ENV === 'production',
                 });
                 res.json({ loggedIn: false, userId: null, username: null });
             });
@@ -117,7 +116,7 @@ app.post('/logout', (req, res) => {
         res.clearCookie('sid', {
             httpOnly: true,
             sameSite: 'lax',
-            secure: false,
+            secure: process.env.NODE_ENV === 'production',
         });
         res.sendStatus(204);
     });
