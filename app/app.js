@@ -1,8 +1,13 @@
 require('dotenv').config();
+
 const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const path = require('path');
+
+
+// Database
 const pool = require('../database/database');
 
 
@@ -17,6 +22,20 @@ const csrfProtection = require('../middleware/csrfProtection');
 
 const app = express();
 const port = 3000;
+
+// Helmet security headers + CSP
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+  })
+);
 
 // Utilities
 const { decrypt } = require('../utils/encrypt_db');
@@ -44,6 +63,7 @@ app.use(session({
         secure: process.env.NODE_ENV === 'production'
     }
 }));
+
 
 app.use(cookieParser());
 
