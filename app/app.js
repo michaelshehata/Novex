@@ -24,12 +24,15 @@ const app = express();
 const port = 3000;
 
 // Helmet security headers + CSP
+// Allows cdnjs cloud flare to load font awesome from their cdn
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
+        styleSrc: ["'self'", 'https://cdnjs.cloudflare.com'],
+        fontSrc: ["'self'", 'https://cdnjs.cloudflare.com', 'data:'],
         objectSrc: ["'none'"],
         upgradeInsecureRequests: [],
       },
@@ -48,6 +51,11 @@ if (!process.env.SESSION_SECRET) {
 
 if (!process.env.ENCRYPTION_KEY || process.env.ENCRYPTION_KEY.length < 8) {
     throw new Error('ENCRYPTION_KEY must be set to a sufficiently long secret');
+}
+
+if (!process.env.FAKE_HASH || String(process.env.FAKE_HASH).length < 10) {
+    // Keep login timing and responses consistent for non-existent usernames.
+    throw new Error('FAKE_HASH must be set (run: npm run generate-fake-hash)');
 }
 
 app.use(session({
@@ -126,7 +134,7 @@ app.get('/api/session', async (req, res) => {
 });
 
 
-app.post('/logout', (req, res) => {
+app.post('/logout', csrfProtection, (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             console.error(err);
