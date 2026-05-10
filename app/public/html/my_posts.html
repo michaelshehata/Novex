@@ -8,7 +8,6 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="../js/my_posts.js" defer></script>
         <script src="../js/main.js" defer></script>
-        <script src="../js/mfa.js" defer></script>
     </head>
     <body>
         <header>
@@ -34,7 +33,7 @@
                 <h2>Share your thoughts</h2>
                 <p>Chat with fellow investors!</p>
 
-                <form id="postForm" name="postForm">
+                <form action="/makepost" method="post" id="postForm" name="postForm">
                     <fieldset>
                         <legend>Compose a Post</legend>
                             <label for="title_field">Post Title:</label>
@@ -49,36 +48,6 @@
                             <button type="submit" id="post_button">Post</button>
                     </fieldset>
                 </form>
-            </section>
-
-            <section id="security2fa" class="mfa_section">
-                <h2>Two-step sign-in (optional)</h2>
-                <p id="mfa_status">Loading…</p>
-                <p id="mfa_message" class="error" style="display:none;"></p>
-
-                <div id="mfa_enable_panel" hidden>
-                    <p>Add this account to your authenticator app using the link or the secret.</p>
-                    <p><a id="mfa_otpauth" href="#" rel="noopener noreferrer">Open in authenticator app</a></p>
-                    <p><small>Secret for manual entry: <code id="mfa_secret"></code></small></p>
-                    <p>
-                        <label for="mfa_confirm_code">Code from app:</label>
-                        <input id="mfa_confirm_code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="6-digit code">
-                    </p>
-                    <p>
-                        <button type="button" id="mfa_confirm_btn">Confirm and turn on</button>
-                        <button type="button" id="mfa_cancel_setup">Cancel</button>
-                    </p>
-                </div>
-
-                <p><button type="button" id="mfa_start_setup">Set up authenticator</button></p>
-
-                <div id="mfa_disable_panel" hidden>
-                    <p>
-                        <label for="mfa_disable_password">Your password:</label>
-                        <input id="mfa_disable_password" type="password" autocomplete="current-password">
-                    </p>
-                    <p><button type="button" id="mfa_disable_btn">Turn off two-step sign-in</button></p>
-                </div>
             </section>
 
             <section id="myPosts">
