@@ -1,13 +1,13 @@
 {
   "scripts": {
     "measure-login": "node scripts/login_times.js",
-    "db:test": "node database/database_test.js",
-    "db:seed-user": "node scripts/seed_user.js"
-  },
-  "devDependencies": {
-    "express": "^4.21.1"
+    "db:test": "node utils/database_test.js",
+    "db:seed-user": "node scripts/seed_user.js",
+    "generate-fake-hash": "node scripts/generate_fake_hash.js",
+    "test": "node --test tests/crypto.test.js"
   },
   "dependencies": {
+    "express": "^4.21.1",
     "argon2": "^0.44.0",
     "cookie-parser": "^1.4.7",
     "csrf-csrf": "^4.0.3",
