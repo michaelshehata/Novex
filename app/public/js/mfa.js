@@ -1,3 +1,7 @@
+/**
+ * Retrieve the current CSRF token from the server.
+ * @returns {string|null} The CSRF token, or `null` if it could not be retrieved.
+ */
 async function getCsrfToken() {
   const response = await fetch('/auth/csrf-token');
   if (!response.ok) return null;
@@ -7,6 +11,12 @@ async function getCsrfToken() {
 
 
 
+/**
+ * Display or hide a message element and toggle its error state.
+ * @param {HTMLElement|null|undefined} el - The target message element; does nothing if falsy.
+ * @param {string} text - Message text; element is shown when non-empty and hidden when empty.
+ * @param {boolean} [isError=false] - If true, adds the `error` CSS class; otherwise removes it.
+ */
 function showMsg(el, text, isError) {
   if (!el) return;
   el.textContent = text;
@@ -16,6 +26,14 @@ function showMsg(el, text, isError) {
 
 
 
+/**
+ * Initialize and manage the two-step (TOTP) sign-in UI and its interactions.
+ *
+ * Loads the current session to render MFA state, wires up controls for starting
+ * setup, confirming a TOTP code, cancelling setup, and disabling MFA, and
+ * performs the required server requests (session load, setup, confirm, disable)
+ * while displaying status and error messages in the UI.
+ */
 async function initMfaPanel() {
   const statusEl = document.getElementById('mfa_status');
   const msgEl = document.getElementById('mfa_message');
