@@ -1,58 +1,74 @@
-async function displayUsername() {
+async function getSession() {
     try {
-        const response = await fetch('/api/session');
-        if (!response.ok) return;
+        const res = await fetch('/api/session', {
+            credentials: 'include'
+        });
 
-        const data = await response.json();
-        const link = document.querySelector('#login_link');
-        if (!link) return;
-        link.textContent = data.loggedIn && data.username ? data.username : 'Guest';
-    } catch (err) {
-        console.error('Failed to load session state:', err);
+        return await res.json();
+
+    } catch {
+        return {
+            loggedIn: false
+        };
     }
 }
 
-
-async function getCsrfToken() {
+async function logout() {
     try {
-        const response = await fetch('/auth/csrf-token');
-        if (!response.ok) return null;
+        await fetch('/logout', {
+            method: 'POST',
+            credentials: 'include'
+        });
 
-        const data = await response.json();
-        return data.csrfToken;
     } catch (err) {
-        console.error('Failed to fetch CSRF token:', err);
+        console.error(err);
+    }
+
+    window.location.href = '/';
+}
+
+async function protectPage() {
+    const session = await getSession();
+
+    if (!session.loggedIn) {
+        window.location.href = '/login';
         return null;
     }
+
+    return session;
 }
 
+async function updateNavbar() {
+    const navAuth =
+        document.getElementById('nav_auth');
 
-function setupLogout() {
-    const logoutButton = document.querySelector('#logout_btn');
-    if (!logoutButton) return;
+    if (!navAuth) return;
 
-    logoutButton.addEventListener('click', async (event) => {
-        event.preventDefault();
-        try {
-            const csrfToken = await getCsrfToken();
-            if (!csrfToken) {
-                console.error('Logout blocked because the CSRF token could not be loaded.');
-                return;
-            }
+    const session = await getSession();
 
-            const headers = { 'x-csrf-token': csrfToken };
-            const response = await fetch('/logout', { method: 'POST', headers });
-            if (response.ok) {
-                window.location.href = '/html/login.html';
-            } else {
-                console.error('Logout failed:', response.status);
-            }
-        } catch (err) {
-            console.error('Logout error:', err);
+    if (session.loggedIn) {
+        navAuth.innerHTML = `
+            <a href="/dashboard">Dashboard</a>
+            <a href="/posts-page">Posts</a>
+            <a href="/create_post">Create Post</a>
+            <a href="/my_posts">My Posts</a>
+            <a href="/settings">Settings</a>
+            <button id="logout_btn">Logout</button>
+        `;
+
+        const logoutBtn =
+            document.getElementById('logout_btn');
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', logout);
         }
-    });
+
+    } else {
+        navAuth.innerHTML = `
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        `;
+    }
 }
 
-
-displayUsername();
-setupLogout();
+updateNavbar();
