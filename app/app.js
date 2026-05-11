@@ -81,6 +81,12 @@ app.use('/auth/register', registerLimiter);
 app.use('/auth', csrfProtection);
 app.use('/posts', csrfProtection);
 
+// CSRF token route
+app.get('/auth/csrf-token', (req, res) => {
+    res.json({
+        csrfToken: req.csrfToken()
+    });
+});
 
 // Routes
 app.use('/auth', authRoutes);
