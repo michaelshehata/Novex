@@ -143,10 +143,27 @@ app.post('/logout', (req, res) => {
 });
 
 
-// Basic routes
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/html/index.html'));
+// Basic routes — HTML lives in public/html/; static middleware only exposes public/ at /
+// Root, so /login.html and navbar paths like /login would 404 without these aliases.
+const htmlDir = path.join(__dirname, 'public/html');
+
+function serveHtml(filename) {
+    return (req, res) => {
+        res.sendFile(path.join(htmlDir, filename));
+    };
+}
+
+app.get(['/', '/index.html'], (req, res) => {
+    res.sendFile(path.join(htmlDir, 'index.html'));
 });
+
+app.get(['/login', '/login.html'], serveHtml('login.html'));
+app.get(['/register', '/register.html'], serveHtml('register.html'));
+app.get(['/dashboard', '/dashboard.html'], serveHtml('dashboard.html'));
+app.get(['/posts-page', '/posts.html'], serveHtml('posts.html'));
+app.get(['/create_post', '/create_post.html'], serveHtml('create_post.html'));
+app.get(['/my_posts', '/my_posts.html'], serveHtml('my_posts.html'));
+app.get(['/settings', '/settings.html'], serveHtml('settings.html'));
 
 app.use((err, req, res, next) => {
     if (err.code === 'EBADCSRFTOKEN') {
