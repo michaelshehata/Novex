@@ -1,46 +1,120 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title> Blog Posts </title>
-        <meta charset="utf-8">
-        <link rel="icon" type="image/x-icon" href="../imgs/logo.ico">
-        <link rel="stylesheet" href="../css/style.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <script src="../js/posts.js" defer></script>
-        <script src="../js/main.js" defer></script>
-    </head>
-    <body>
-        <header>
-            <a href="../html/index.html"><img id="logo" src="../imgs/logo.png"></a>
-            <div class="dropdown">
-                <button id="login_link" href="#">Username <i class="fa fa-caret-down"></i></button>
-                <div class="dropdown-content">
-                    <a id="logout_btn" href="../html/login.html">Log out</a>
-                </div>
-            </div>
-        </header>
+<html lang="en">
 
-        <nav>
-            <ul>
-                <li><a href="../html/index.html">Home</a></li>
-                <li class="active"><a href="../html/posts.html">Latest Posts</a></li>
-                <li><a href="../html/my_posts.html">My Posts</a></li>
-            </ul>
-        </nav>
+<head>
+  <meta charset="UTF-8">
+  <title>All Posts - Novex</title>
 
-        <main>
-            <section id="postsList">
-                <h2>Latest Blog Posts</h2>
-                <p>See the latest posts from your fellow bloggers!</p>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/blog.css">
+</head>
 
-                <i class="fa fa-search" aria-hidden="true"></i>
-                <input class="search_bar" id="search" name="search" type="text" placeholder="Search posts...">
-            </section>
-        </main>
+<body>
+
+<nav class="navbar">
+
+  <div class="container nav-inner">
+
+    <a href="./index.html" class="logo-link">
+      <div class="logo">
+        Nov<span>ex</span>
+      </div>
+    </a>
+
+    <div class="nav-links" id="nav_auth"></div>
+
+  </div>
+
+</nav>
+
+<div class="container blog-layout">
+
+  <aside class="sidebar">
+
+    <h3>Explore</h3>
+
+    <div class="sidebar-links">
+
+      <a href="./dashboard.html">
+        Dashboard
+      </a>
+
+      <a href="./posts.html">
+        All Posts
+      </a>
+
+      <a href="./create_post.html">
+        Create Post
+      </a>
+
+      <a href="./my_posts.html">
+        My Posts
+      </a>
+
+      <a href="./settings.html">
+        Security Settings
+      </a>
+
+    </div>
+
+    <br>
+
+    <div class="security-box">
+
+      <strong>Security Features</strong>
+
+      <ul>
+        <li>CSRF Protection</li>
+        <li>XSS Sanitisation</li>
+        <li>Session Validation</li>
+        <li>Secure Authentication</li>
+      </ul>
+
+    </div>
+
+  </aside>
+
+  <main class="main-feed">
+
+    <div class="feed-header">
+
+      <h1 class="blog-post-title">
+        Financial Discussion Feed
+      </h1>
+
+      <p class="muted">
+        Explore community discussions about markets,
+        economics, fintech and cybersecurity.
+      </p>
+
+    </div>
+
+    <div id="posts_container">
+
+      <div class="blog-post">
+
+        <div class="blog-post-header">
+
+          <div>
+
+            <h2 class="blog-post-title">
+              Loading posts...
+            </h2>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
 
 <script src="../js/main.js"></script>
-
 <script src="../js/posts.js"></script>
 
-    </body>
+</body>
 </html>
