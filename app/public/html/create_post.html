@@ -8,194 +8,140 @@
 
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/blog.css">
+
+  <style>
+
+    .center-create {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+  </style>
+
 </head>
 
 <body>
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
+<nav class="navbar">
 
-    <div class="container nav-inner">
+  <div class="container nav-inner">
 
     <a href="./index.html" class="logo-link">
-        <div class="logo">
-            Nov<span>ex</span>
-        </div>
+      <div class="logo">
+        Nov<span>ex</span>
+      </div>
     </a>
+
     <div class="nav-links" id="nav_auth"></div>
+
+  </div>
+
+</nav>
+
+<div class="center-create">
+
+  <main class="main-feed">
+
+    <div class="blog-post">
+
+      <h1 class="blog-post-title">
+        Create Financial Discussion Post
+      </h1>
+
+      <p class="muted">
+        Share market insights, economic discussions,
+        fintech analysis and investment topics securely.
+      </p>
+
+      <br><br>
+
+      <form
+        id="create_post_form"
+        method="POST"
+        action="/posts/create"
+        class="auth-form"
+      >
+
+        <input
+          type="hidden"
+          name="_csrf"
+          id="csrf_token"
+        >
+
+        <input
+          type="text"
+          name="title"
+          id="post_title"
+          placeholder="Post title"
+          maxlength="120"
+          required
+        >
+
+        <select
+          name="category"
+          id="post_category"
+          class="post-select"
+        >
+
+          <option value="Markets">Markets</option>
+          <option value="Investing">Investing</option>
+          <option value="Economics">Economics</option>
+          <option value="FinTech">FinTech</option>
+          <option value="Security">Security</option>
+
+        </select>
+
+        <textarea
+          name="content"
+          id="post_content"
+          rows="14"
+          placeholder="Write your financial discussion here..."
+          required
+        ></textarea>
+
+        <br>
+
+        <div class="security-box">
+
+          <strong>Formatting & Security</strong>
+
+          <ul>
+            <li>Unsafe scripts are automatically blocked</li>
+            <li>XSS sanitisation is enforced server-side</li>
+            <li>Authenticated session required</li>
+          </ul>
+
+        </div>
+
+        <br>
+
+        <div class="post-actions">
+
+          <button
+            type="submit"
+            class="post-btn"
+            id="publish_post_btn"
+          >
+            Publish Post
+          </button>
+
+          <a
+            href="./dashboard.html"
+            class="post-btn"
+          >
+            Cancel
+          </a>
+
+        </div>
+
+      </form>
 
     </div>
 
-  </nav>
+  </main>
 
-  <!-- MAIN LAYOUT -->
-  <div class="container blog-layout">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-
-      <h3>Navigation</h3>
-
-      <div class="sidebar-links">
-
-        <a href="./dashboard.html">
-          Dashboard
-        </a>
-
-        <a href="./create_post.html">
-          Create Post
-        </a>
-
-        <a href="./my_posts.html">
-          My Posts
-        </a>
-
-        <a href="./settings.html">
-          Security Settings
-        </a>
-
-      </div>
-
-      <br>
-
-      <div class="security-box">
-
-        <strong>Secure Publishing</strong>
-
-        <ul>
-          <li>CSRF Protected Requests</li>
-          <li>Session Validation Enabled</li>
-          <li>Stored Content Sanitisation</li>
-          <li>XSS Mitigation Applied</li>
-        </ul>
-
-      </div>
-
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="main-feed">
-
-      <div class="blog-post">
-
-        <h1 class="blog-post-title">
-          Create Financial Discussion Post
-        </h1>
-
-        <p class="muted">
-          Share market insights, economic discussions,
-          fintech analysis and investment topics securely.
-        </p>
-
-        <br><br>
-
-        <!-- FORM -->
-        <form
-          id="create_post_form"
-          method="POST"
-          action="/posts/create"
-          class="auth-form"
-        >
-
-          <!-- CSRF -->
-          <input
-            type="hidden"
-            name="_csrf"
-            id="csrf_token"
-          >
-
-          <!-- TITLE -->
-          <input
-            type="text"
-            name="title"
-            id="post_title"
-            placeholder="Post title"
-            maxlength="120"
-            required
-          >
-
-          <!-- CATEGORY -->
-          <select
-            name="category"
-            id="post_category"
-            class="post-select"
-          >
-
-            <option value="Markets">
-              Markets
-            </option>
-
-            <option value="Investing">
-              Investing
-            </option>
-
-            <option value="Economics">
-              Economics
-            </option>
-
-            <option value="FinTech">
-              FinTech
-            </option>
-
-            <option value="Security">
-              Security
-            </option>
-
-          </select>
-
-          <!-- CONTENT -->
-          <textarea
-            name="content"
-            id="post_content"
-            rows="14"
-            placeholder="Write your financial discussion here..."
-            required
-          ></textarea>
-
-          <br>
-
-          <!-- SANITISATION NOTICE -->
-          <div class="security-box">
-
-            <strong>Formatting & Security</strong>
-
-            <ul>
-              <li>Unsafe scripts are automatically blocked</li>
-              <li>XSS sanitisation is enforced server-side</li>
-              <li>Only safe formatting tags are allowed</li>
-              <li>Authenticated session required</li>
-            </ul>
-
-          </div>
-
-          <br>
-
-          <!-- BUTTONS -->
-          <div class="post-actions">
-
-            <button
-              type="submit"
-              class="post-btn"
-            >
-              Publish Post
-            </button>
-
-            <a
-              href="./dashboard.html"
-              class="post-btn"
-            >
-              Cancel
-            </a>
-
-          </div>
-
-        </form>
-
-      </div>
-
-    </main>
-
-  </div>
+</div>
 
 <script src="../js/main.js"></script>
 <script src="../js/create_post.js"></script>

@@ -1,6 +1,9 @@
 async function getCsrfToken() {
+
     const res =
-        await fetch('/auth/csrf-token');
+        await fetch('/auth/csrf-token', {
+            credentials: 'include'
+        });
 
     const data =
         await res.json();
@@ -8,65 +11,84 @@ async function getCsrfToken() {
     return data.csrfToken;
 }
 
+
+
 (async () => {
+
     const session =
         await protectPage();
 
     if (!session) return;
+
 })();
+
+
 
 const form =
     document.getElementById('create_post_form');
 
-const message =
-    document.getElementById('post_message');
 
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
 
-    message.textContent = '';
+if (form) {
 
-    try {
-        const csrfToken =
-            await getCsrfToken();
+    form.addEventListener('submit', async (e) => {
 
-        const title =
-            document.getElementById('title').value;
+        e.preventDefault();
 
-        const content =
-            document.getElementById('content').value;
+        try {
 
-        const res = await fetch('/posts', {
-            method: 'POST',
-            credentials: 'include',
+            const csrfToken =
+                await getCsrfToken();
 
-            headers: {
-                'Content-Type': 'application/json',
-                'x-csrf-token': csrfToken
-            },
+            const title =
+                document.getElementById('post_title').value;
 
-            body: JSON.stringify({
-                title,
-                content,
-                _csrf: csrfToken
-            })
-        });
+            const category =
+                document.getElementById('post_category').value;
 
-        if (res.ok) {
-            message.textContent =
-                'Post created successfully.';
+            const content =
+                document.getElementById('post_content').value;
 
-            form.reset();
-            return;
+            const res =
+                await fetch('/posts', {
+
+                    method: 'POST',
+
+                    credentials: 'include',
+
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-csrf-token': csrfToken
+                    },
+
+                    body: JSON.stringify({
+                        title,
+                        category,
+                        content,
+                        _csrf: csrfToken
+                    })
+                });
+
+            if (res.ok) {
+
+                window.location.href =
+                    '/posts-page';
+
+                return;
+            }
+
+            const text =
+                await res.text();
+
+            alert(text || 'Unable to create post');
+
         }
 
-        message.textContent =
-            await res.text();
+        catch (err) {
 
-    } catch (err) {
-        console.error(err);
+            console.error(err);
 
-        message.textContent =
-            'Network error.';
-    }
-});
+            alert('Network error.');
+        }
+    });
+}

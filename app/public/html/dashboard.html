@@ -20,9 +20,7 @@
       </div>
     </a>
 
-  <div class="nav-links" id="nav_auth"></div>
-
-  
+    <div class="nav-links" id="nav_auth"></div>
 
   </div>
 </nav>
@@ -70,30 +68,10 @@
 
   <h2 class="section-title">Latest Posts</h2>
 
-  <div class="post-grid">
+  <div class="post-grid" id="latest_posts">
 
     <div class="card post-card">
-      <h3>Market Volatility and AI Trading</h3>
-
-      <p class="muted">
-        Exploring the rise of machine learning in financial markets...
-      </p>
-    </div>
-
-    <div class="card post-card">
-      <h3>Modern Banking Security</h3>
-
-      <p class="muted">
-        How MFA and secure sessions protect financial systems...
-      </p>
-    </div>
-
-    <div class="card post-card">
-      <h3>Economic Outlook 2026</h3>
-
-      <p class="muted">
-        Inflation trends and global finance discussion...
-      </p>
+      <h3>Loading posts...</h3>
     </div>
 
   </div>
@@ -102,6 +80,52 @@
 
 <script src="../js/main.js"></script>
 <script src="../js/dashboard.js"></script>
+
+<script>
+
+async function loadLatestPosts() {
+
+  try {
+
+    const response = await fetch('/posts');
+
+    const posts = await response.json();
+
+    const container =
+      document.getElementById('latest_posts');
+
+    container.innerHTML = '';
+
+    posts.slice(0, 3).forEach(post => {
+
+      const postCard =
+        document.createElement('div');
+
+      postCard.className =
+        'card post-card';
+
+      postCard.innerHTML = `
+
+        <h3>${post.title}</h3>
+
+        <p class="muted">
+          ${post.content.substring(0, 120)}...
+        </p>
+
+      `;
+
+      container.appendChild(postCard);
+    });
+
+  } catch (err) {
+
+    console.error(err);
+  }
+}
+
+loadLatestPosts();
+
+</script>
 
 </body>
 </html>

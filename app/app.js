@@ -191,13 +191,11 @@ app.post('/logout', csrfProtection, (req, res) => {
             return res.sendStatus(500);
         }
 
-        res.clearCookie('sid', {
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'production',
-        });
+        res.clearCookie('sid');
 
-        res.sendStatus(204);
+        return res.json({
+            success: true
+        });
     });
 });
 
