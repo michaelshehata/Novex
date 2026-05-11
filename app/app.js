@@ -145,7 +145,7 @@ app.post('/logout', (req, res) => {
 
 // Basic routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/html/login.html'));
+    res.sendFile(path.join(__dirname, 'public/html/index.html'));
 });
 
 app.use((err, req, res, next) => {

@@ -1,62 +1,105 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title> Novex </title>
-        <meta charset="utf-8">
-        <link rel="icon" type="image/x-icon" href="../imgs/logo.ico">
-        <link rel="stylesheet" href="../css/style.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <script src="../js/my_posts.js" defer></script>
-        <script src="../js/main.js" defer></script>
-    </head>
-    <body>
-        <header>
-            <a href="../html/index.html"><img id="logo" src="../imgs/logo.png"></a>
-            <div class="dropdown">
-                <button id="login_link" href="#">Username <i class="fa fa-caret-down"></i></button>
-                <div class="dropdown-content">
-                    <a id="logout_btn" href="../html/login.html">Log out</a>
-                </div>
-            </div>
-        </header>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Posts - Novex</title>
 
-        <nav>
-            <ul>
-                <li><a href="../html/index.html">Home</a></li>
-                <li><a href="../html/posts.html">Latest Posts</a></li>
-                <li class="active"><a href="../html/my_posts.html">My Posts</a></li>
-            </ul>
-        </nav>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/blog.css">
+</head>
 
-        <main>
-            <section>
-                <h2>Share your thoughts</h2>
-                <p>Chat with fellow investors!</p>
+<body>
 
-                <form action="/makepost" method="post" id="postForm" name="postForm">
-                    <fieldset>
-                        <legend>Compose a Post</legend>
-                            <label for="title_field">Post Title:</label>
-                            <input id="title_field" name="title_field" type="text" placeholder="Title" required>
+<nav class="navbar">
+  <div class="container nav-inner">
 
-                            <label for="content_field">Post Content:</label>
-                            <textarea id="content_field" name="content_field" placeholder="Write your thoughts here.." required></textarea>
-                            <!-- <input id="content_field" name="content_field" type="text"> -->
+    <a href="./index.html" class="logo-link">
+      <div class="logo">
+          Nov<span>ex</span>
+      </div>
+    </a>
 
-                            <input id="postId" name="postId" type="hidden">
-                            
-                            <button type="submit" id="post_button">Post</button>
-                    </fieldset>
-                </form>
-            </section>
+    <div class="nav-links">
+      <a class="nav-btn" href="./dashboard.html">Dashboard</a>
+      <a class="nav-btn primary-btn" href="./create-post.html">New Post</a>
+    </div>
 
-            <section id="myPosts">
-                <h2>Your Posts</h2>
-                <p>See all the posts you've made so far.</p>
+  </div>
+</nav>
 
-                <i class="fa fa-search" aria-hidden="true"></i>
-                <input class="search_bar" id="search" name="search" type="text" placeholder="Search your posts...">
-            </section>
-        </main>
-    </body>
+<div class="container blog-layout">
+
+  <aside class="sidebar">
+
+    <h3>Your Space</h3>
+
+    <div class="sidebar-links">
+      <a href="./dashboard.html">Dashboard</a>
+      <a href="./my_posts.html">My Posts</a>
+      <a href="./settings.html">Security Settings</a>
+    </div>
+
+  </aside>
+
+  <main class="main-feed">
+
+    <div class="blog-post">
+
+      <div class="blog-post-header">
+
+        <div>
+          <h2 class="blog-post-title">
+            AI Impact on Retail Investing
+          </h2>
+
+          <div class="blog-post-meta">
+            Posted May 2026 • Secure Session Verified
+          </div>
+        </div>
+
+      </div>
+
+      <div class="blog-post-content">
+        AI-driven market tools are reshaping retail investing...
+      </div>
+
+      <div class="post-actions">
+        <button class="post-btn">Edit</button>
+        <button class="post-btn">Delete</button>
+      </div>
+
+    </div>
+
+    <div class="blog-post">
+
+      <div class="blog-post-header">
+
+        <div>
+          <h2 class="blog-post-title">
+            Banking Security Trends
+          </h2>
+
+          <div class="blog-post-meta">
+            Posted April 2026
+          </div>
+        </div>
+
+      </div>
+
+      <div class="blog-post-content">
+        MFA and encrypted databases continue becoming industry standards...
+      </div>
+
+      <div class="post-actions">
+        <button class="post-btn">Edit</button>
+        <button class="post-btn">Delete</button>
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+</body>
 </html>

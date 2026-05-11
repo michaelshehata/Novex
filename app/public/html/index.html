@@ -1,50 +1,174 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title> Novex </title>
-        <meta charset="utf-8">
-        <link rel="icon" type="image/x-icon" href="../imgs/logo.ico">
-        <link rel="stylesheet" href="../css/style.css">
-        
-        <script src="../js/index.js" defer></script>
-        <script src="../js/main.js" defer></script>
-    </head>
-    <body>
-        <header>
-            <a href="../html/index.html"><img id="logo" src="../imgs/logo.png"></a>
-            <div class="dropdown">
-                <button id="login_link" href="#">Username <i class="fa fa-caret-down"></i></button>
-                <div class="dropdown-content">
-                    <a id="logout_btn" href="../html/login.html">Log out</a>
-                </div>
-            </div>
-        </header>
+<html lang="en">
 
-        <nav>
-            <ul>
-                <li class="active"><a href="../html/index.html">Home</a></li>
-                <li><a href="../html/posts.html">Latest Posts</a></li>
-                <li><a href="../html/my_posts.html">My Posts</a></li>
-            </ul>
-        </nav>
+<head>
+  <meta charset="UTF-8">
+  <title>Novex - Secure Finance Discussions</title>
 
-        <main>
-            
-            <section>
-                <h2>Feel like sharing?</h2>
-                <p>Share your thoughts and experiences with the Novex community!</p>
-                <p><a class="link_btn" href="../html/my_posts.html">Make a Post</a></p>
-            </section>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/blog.css">
+</head>
 
-            <section id="postsList">
-                <h2>Latest Novex Posts</h2>
-                <p>See the latest posts from your fellow investors!</p>
+<body>
 
-                <p><a class="link_btn" href="../html/posts.html">See More Posts</a></p>
-            </section>
-        </main>
-        <footer>
-            
-        </footer>
-    </body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+
+    <div class="container nav-inner">
+
+      <a href="./index.html" class="logo-link">
+        <div class="logo">
+          Nov<span>ex</span>
+        </div>
+      </a>
+
+      <div class="nav-links">
+
+        <a class="nav-btn" href="./login.html">
+          Login
+        </a>
+
+        <a class="nav-btn primary-btn" href="./register.html">
+          Register
+        </a>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero-section">
+
+    <div class="container hero-grid">
+
+      <!-- LEFT -->
+      <div>
+
+        <div class="hero-badge">
+          Secure Finance Community
+        </div>
+
+        <h1 class="hero-title">
+          Discuss Markets.
+          <br>
+          Share Insights.
+          <br>
+          Securely.
+        </h1>
+
+        <p class="hero-description">
+
+          Novex is a financial blog platform
+          built with modern authentication, session protection,
+          MFA security and encrypted data storage.
+          Stay secure whilst growing your finance knowledge!
+
+        </p>
+
+        <div class="hero-actions">
+
+          <a href="./register.html" class="hero-btn primary-btn">
+            Get Started
+          </a>
+
+          <a href="./login.html" class="hero-btn secondary-btn">
+            Sign In
+          </a>
+
+        </div>
+
+      </div>
+
+      <!-- RIGHT -->
+      <div class="hero-card">
+
+        <h2>Security Features</h2>
+
+        <div class="feature-list">
+
+          <div class="feature-item">
+            Argon2id Password Hashing
+          </div>
+
+          <div class="feature-item">
+            CSRF Protection
+          </div>
+
+          <div class="feature-item">
+            Session Management
+          </div>
+
+          <div class="feature-item">
+            TOTP Multi-Factor Authentication
+          </div>
+
+          <div class="feature-item">
+            XSS Mitigation
+          </div>
+
+          <div class="feature-item">
+            PostgreSQL + Supabase Storage
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-section">
+
+    <div class="container">
+
+      <h2 class="section-title">
+        Platform Features
+      </h2>
+
+      <div class="feature-grid">
+
+        <div class="feature-card">
+
+          <h3>Financial Discussions</h3>
+
+          <p>
+            Create and participate in secure finance-focused discussions
+            about investing, fintech, economics and cybersecurity.
+          </p>
+
+        </div>
+
+        <div class="feature-card">
+
+          <h3>Modern Authentication</h3>
+
+          <p>
+            Secure login system with session protection,
+            CSRF mitigation, MFA and account security measures.
+          </p>
+
+        </div>
+
+        <div class="feature-card">
+
+          <h3>Protected Data</h3>
+
+          <p>
+            Sensitive information is encrypted and passwords
+            are securely hashed using Argon2id.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</body>
 </html>
