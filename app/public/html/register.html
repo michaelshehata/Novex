@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Novex - Register</title>
+
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/auth.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="./index.html" class="logo-link">
+      <div class="logo">
+        Nov<span>ex</span>
+      </div>
+    </a>
+
+    <div class="nav-links">
+      <a class="nav-btn" href="./login.html">Login</a>
+    </div>
+  </div>
+</nav>
+
+<main class="auth-wrapper">
+
+  <div class="card auth-card">
+
+    <h1 class="auth-title">Create Account</h1>
+
+    <p class="auth-subtitle">
+      Join the secure finance discussion platform.
+    </p>
+
+    <form
+      method="post"
+      action="/auth/register"
+      class="auth-form"
+    >
+
+      <input type="text" name="username" placeholder="Username" required>
+
+      <input type="email" name="email" placeholder="Email" required>
+
+      <input type="password" name="password" placeholder="Password" required>
+
+      <button class="primary-btn" type="submit">
+        Create Account
+      </button>
+
+    </form>
+
+    <div class="security-box">
+      <strong>Password Requirements</strong>
+
+      <ul>
+        <li>Minimum 8 characters</li>
+        <li>Uppercase + lowercase</li>
+        <li>At least one number</li>
+      </ul>
+    </div>
+
+  </div>
+
+</main>
+
+</body>
+</html>
