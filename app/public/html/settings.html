@@ -3,41 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <title>Security Settings</title>
+
   <link rel="icon" type="image/icon" href="/imgs/logo.ico">
 
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/blog.css">
+
+  <style>
+
+    .center-settings {
+
+      max-width: 1000px;
+
+      margin: 40px auto;
+
+      padding: 0 20px;
+    }
+
+  </style>
+
 </head>
 
 <body>
 
 <nav class="navbar">
+
   <div class="container nav-inner">
 
     <a href="./index.html" class="logo-link">
+
       <div class="logo">
-          Nov<span>ex</span>
+        Nov<span>ex</span>
       </div>
+
     </a>
 
-    <div class="nav-links" id="nav_auth"></div>
+    <div
+      class="nav-links"
+      id="nav_auth"
+    ></div>
 
   </div>
+
 </nav>
 
-<div class="container blog-layout">
 
-  <aside class="sidebar">
-
-    <h3>Account</h3>
-
-    <div class="sidebar-links">
-      <a href="./dashboard.html">Dashboard</a>
-      <a href="./my_posts.html">My Posts</a>
-      <a href="./settings.html">Security</a>
-    </div>
-
-  </aside>
+<div class="center-settings">
 
   <main class="main-feed">
 
@@ -71,21 +82,123 @@
 
       <br>
 
-      <div class="security-item">
-        MFA Status: Enabled
+      <div
+        class="security-item"
+        id="mfa_status"
+      >
+        MFA Status: Loading...
       </div>
 
       <br><br>
 
-      <button class="primary-btn nav-btn">
+      <button
+        id="mfa_start_setup"
+        class="hero-btn primary-btn"
+      >
         Configure MFA
       </button>
+
+
+      <div
+        id="mfa_message"
+        class="muted"
+        style="margin-top:20px;"
+      ></div>
+
+
+
+      <div
+        id="mfa_enable_panel"
+        hidden
+        style="margin-top:30px;"
+      >
+
+        <p>
+        Scan this QR code in your authenticator app:
+        </p>
+
+        <img
+          id="mfa_qr"
+          alt="MFA QR Code"
+          hidden
+          style="
+            width:220px;
+            height:220px;
+            background:white;
+            padding:12px;
+            border-radius:12px;
+            margin-top:10px;
+            margin-bottom:20px;
+          "
+        >
+
+        <br>
+
+        <div>
+          Secret:
+          <strong id="mfa_secret"></strong>
+        </div>
+
+        <br>
+
+        <input
+          type="text"
+          id="mfa_confirm_code"
+          placeholder="Enter 6 digit code"
+          maxlength="6"
+          class="auth-input"
+        >
+
+        <br><br>
+
+        <button
+          id="mfa_confirm_btn"
+          class="hero-btn primary-btn"
+        >
+          Confirm MFA
+        </button>
+
+        <button
+          id="mfa_cancel_setup"
+          class="hero-btn"
+        >
+          Cancel
+        </button>
+
+      </div>
+
+
+
+      <div
+        id="mfa_disable_panel"
+        hidden
+        style="margin-top:30px;"
+      >
+
+        <input
+          type="password"
+          id="mfa_disable_password"
+          placeholder="Confirm password"
+          class="auth-input"
+        >
+
+        <br><br>
+
+        <button
+          id="mfa_disable_btn"
+          class="hero-btn"
+        >
+          Disable MFA
+        </button>
+
+      </div>
 
     </div>
 
   </main>
 
 </div>
+
 
 <script src="../js/main.js"></script>
 <script src="../js/mfa.js"></script>

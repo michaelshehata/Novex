@@ -45,8 +45,8 @@ async function initMfaPanel() {
     const disablePanel =
         document.getElementById('mfa_disable_panel');
 
-    const otpauthLink =
-        document.getElementById('mfa_otpauth');
+    const qrImage =
+        document.getElementById('mfa_qr');
 
     const secretEl =
         document.getElementById('mfa_secret');
@@ -219,8 +219,12 @@ async function initMfaPanel() {
 
             disablePanel.hidden = true;
 
-            otpauthLink.href =
-                data.otpauth_url || '#';
+            if (qrImage && data.qrCode) {
+
+                qrImage.src = data.qrCode;
+
+                qrImage.hidden = false;
+            }
 
             secretEl.textContent =
                 data.secret_base32 || '';
@@ -339,6 +343,13 @@ async function initMfaPanel() {
         startBtn.hidden = false;
 
         showMessage(msgEl, '');
+
+        if (qrImage) {
+
+            qrImage.hidden = true;
+
+            qrImage.src = '';
+        }
     });
 
 

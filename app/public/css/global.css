@@ -143,3 +143,12 @@ button {
 
     transform: translateY(-1px);
 }
+
+.center-settings {
+
+    max-width: 1000px;
+
+    margin: 40px auto;
+
+    padding: 0 20px;
+}
