@@ -6,89 +6,85 @@
 
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/auth.css">
-
-  <script src="../js/login.js" defer></script>
 </head>
 
 <body>
 
-  <nav class="navbar">
-    <div class="container nav-inner">
-        <a href="./index.html" class="logo-link">
-          <div class="logo">
-            Nov<span>ex</span>
-          </div>
-        </a>
+<nav class="navbar">
+  <div class="container nav-inner">
 
-      <div class="nav-links">
-        <a class="nav-btn" href="./register.html">Register</a>
+    <a href="./index.html" class="logo-link">
+      <div class="logo">
+        Nov<span>ex</span>
       </div>
+    </a>
+
+    <div class="nav-links">
+      <a class="nav-btn" href="./register.html">Register</a>
     </div>
-  </nav>
 
-  <main class="auth-wrapper">
-    <div class="card auth-card">
+  </div>
+</nav>
 
-      <h1 class="auth-title">Secure Login</h1>
+<main class="auth-wrapper">
 
-      <p class="auth-subtitle">
-        Access your secure finance discussion dashboard.
-      </p>
+  <div class="card auth-card">
 
-      <form
-        method="post"
-        action="/auth/login"
-        id="login_form"
-        class="auth-form"
+    <h1 class="auth-title">Secure Login</h1>
+
+    <p class="auth-subtitle">
+      Access your secure finance discussion dashboard.
+    </p>
+
+    <form id="login_form" class="auth-form">
+
+      <input
+        type="text"
+        id="username"
+        name="username"
+        placeholder="Username"
+        required
       >
 
-        <input type="hidden" id="csrf_token" name="_csrf">
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Password"
+        required
+      >
 
-        <input
-          type="text"
-          id="username_input"
-          name="username"
-          placeholder="Username"
-          required
-        >
+      <input
+        type="text"
+        id="totp"
+        name="totpCode"
+        placeholder="Authenticator Code (if enabled)"
+      >
 
-        <input
-          type="password"
-          id="password_input"
-          name="password"
-          placeholder="Password"
-          required
-        >
+      <button class="primary-btn" type="submit">
+        Sign In
+      </button>
 
-        <input
-          type="text"
-          id="totp_input"
-          name="totpCode"
-          placeholder="Authenticator Code (if enabled)"
-        >
+    </form>
 
-        <button class="primary-btn" type="submit">
-          Sign In
-        </button>
+    <div id="login_error" class="error-message"></div>
 
-      </form>
+    <div class="security-box">
+      <strong>Security Features</strong>
 
-      <div class="security-box">
-        <strong>Security Features</strong>
-
-        <ul>
-          <li>Protected with CSRF mitigation</li>
-          <li>Argon2id password hashing</li>
-          <li>Two-factor authentication support</li>
-          <li>Secure session management</li>
-        </ul>
-      </div>
-
+      <ul>
+        <li>Protected with CSRF mitigation</li>
+        <li>Argon2id password hashing</li>
+        <li>Two-factor authentication support</li>
+        <li>Secure session management</li>
+      </ul>
     </div>
-  </main>
+
+  </div>
+
+</main>
 
 <script src="../js/main.js"></script>
-<script src="../js/register.js"></script>
 <script src="../js/login.js"></script>
 
 </body>

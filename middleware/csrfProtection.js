@@ -1,22 +1,12 @@
-const { doubleCsrf } = require('csrf-csrf');
+const csrf = require('csurf');
 
-const { doubleCsrfProtection } = doubleCsrf({
-  getSecret: () => {
-    if (!process.env.SESSION_SECRET) {
-      throw new Error('SESSION_SECRET not set');
+module.exports = csrf({
+    cookie: false,
+
+    value: (req) => {
+        return (
+            req.body?._csrf ||
+            req.headers['x-csrf-token']
+        );
     }
-    return process.env.SESSION_SECRET;
-  },
-  getSessionIdentifier: (req) => req.sessionID,
-  cookieName: 'csrf-token',
-  cookieOptions: {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-  },
-  getCsrfTokenFromRequest: (req) =>
-    req.headers['x-csrf-token'] || (req.body && req.body._csrf) || '',
 });
-
-module.exports = doubleCsrfProtection;

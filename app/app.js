@@ -6,22 +6,28 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const path = require('path');
 
+const app = express();
+const port = 3000;
+
 
 // Database
 const pool = require('../database/database');
+
+
+// Utilities
+const { decrypt } = require('../utils/encrypt_db');
 
 
 // Routes
 const authRoutes = require('../authentication/authRoutes');
 const postRoutes = require('../routes/postRoutes');
 
+
 // Middleware
 const loginLimiter = require('../middleware/rateLimiter');
 const registerLimiter = loginLimiter.registerLimiter;
 const csrfProtection = require('../middleware/csrfProtection');
 
-const app = express();
-const port = 3000;
 
 // Helmet security headers + CSP
 app.use(
@@ -37,11 +43,8 @@ app.use(
   })
 );
 
-// Utilities
-const { decrypt } = require('../utils/encrypt_db');
 
-
-// Session setup
+// Environment validation
 if (!process.env.SESSION_SECRET) {
     throw new Error('SESSION_SECRET not set');
 }
@@ -50,16 +53,24 @@ if (!process.env.ENCRYPTION_KEY || process.env.ENCRYPTION_KEY.length < 8) {
     throw new Error('ENCRYPTION_KEY must be set to a sufficiently long secret');
 }
 
+
+// Session setup
 app.use(session({
     name: 'sid',
     secret: process.env.SESSION_SECRET,
+
     resave: false,
     saveUninitialized: false,
+
     rolling: true,
+
     cookie: {
         httpOnly: true,
+
         maxAge: 15 * 60 * 1000,
+
         sameSite: 'lax',
+
         secure: process.env.NODE_ENV === 'production'
     }
 }));
@@ -67,51 +78,82 @@ app.use(session({
 
 app.use(cookieParser());
 
-// Core middleware (body parsers before CSRF so tokens in JSON bodies are visible)
+
+// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-// Security middleware
+
+// Rate limiting
 app.use('/auth/login', loginLimiter);
 app.use('/auth/register', registerLimiter);
-app.use('/auth', csrfProtection);
-app.use('/posts', csrfProtection);
 
-// CSRF token route
+
+
+// CSRF protection
+app.use(csrfProtection);
+
+
+
+// CSRF token endpoint
 app.get('/auth/csrf-token', (req, res) => {
+
     res.json({
         csrfToken: req.csrfToken()
     });
 });
 
-// Routes
+
+
+// API routes
 app.use('/auth', authRoutes);
 app.use('/posts', postRoutes);
 
 
+
+// Session endpoint
 app.get('/api/session', async (req, res) => {
+
     if (!req.session.userId) {
-        return res.json({ loggedIn: false, userId: null, username: null });
+
+        return res.json({
+            loggedIn: false,
+            userId: null,
+            username: null
+        });
     }
 
     try {
+
         const result = await pool.query(
-            'SELECT id, username, email, totp_enabled FROM users WHERE id = $1',
+            `
+            SELECT id, username, email, totp_enabled
+            FROM users
+            WHERE id = $1
+            `,
             [req.session.userId]
         );
 
         if (result.rows.length === 0) {
+
             return req.session.destroy(() => {
+
                 res.clearCookie('sid', {
                     httpOnly: true,
                     sameSite: 'lax',
                     secure: process.env.NODE_ENV === 'production',
                 });
-                res.json({ loggedIn: false, userId: null, username: null });
+
+                res.json({
+                    loggedIn: false,
+                    userId: null,
+                    username: null
+                });
             });
         }
 
@@ -125,17 +167,27 @@ app.get('/api/session', async (req, res) => {
             totpEnabled: Boolean(user.totp_enabled),
         });
 
-    } catch (err) {
+    }
+
+    catch (err) {
+
         console.error(err);
+
         res.sendStatus(500);
     }
 });
 
 
-app.post('/logout', (req, res) => {
+
+// Logout
+app.post('/logout', csrfProtection, (req, res) => {
+
     req.session.destroy((err) => {
+
         if (err) {
+
             console.error(err);
+
             return res.sendStatus(500);
         }
 
@@ -144,42 +196,112 @@ app.post('/logout', (req, res) => {
             sameSite: 'lax',
             secure: process.env.NODE_ENV === 'production',
         });
+
         res.sendStatus(204);
     });
 });
 
 
-// Basic routes — HTML lives in public/html/; static middleware only exposes public/ at /
-// Root, so /login.html and navbar paths like /login would 404 without these aliases.
+
+// Route protection middleware
+function requireAuth(req, res, next) {
+
+    if (!req.session.userId) {
+
+        return res.redirect('/login');
+    }
+
+    next();
+}
+
+
+
+// HTML routing
 const htmlDir = path.join(__dirname, 'public/html');
 
 function serveHtml(filename) {
+
     return (req, res) => {
-        res.sendFile(path.join(htmlDir, filename));
+
+        res.sendFile(
+            path.join(htmlDir, filename)
+        );
     };
 }
 
-app.get(['/', '/index.html'], (req, res) => {
-    res.sendFile(path.join(htmlDir, 'index.html'));
-});
 
-app.get(['/login', '/login.html'], serveHtml('login.html'));
-app.get(['/register', '/register.html'], serveHtml('register.html'));
-app.get(['/dashboard', '/dashboard.html'], serveHtml('dashboard.html'));
-app.get(['/posts-page', '/posts.html'], serveHtml('posts.html'));
-app.get(['/create_post', '/create_post.html'], serveHtml('create_post.html'));
-app.get(['/my_posts', '/my_posts.html'], serveHtml('my_posts.html'));
-app.get(['/settings', '/settings.html'], serveHtml('settings.html'));
 
+// Public pages
+app.get(['/', '/index.html'], serveHtml('index.html'));
+
+app.get(
+    ['/login', '/login.html'],
+    serveHtml('login.html')
+);
+
+app.get(
+    ['/register', '/register.html'],
+    serveHtml('register.html')
+);
+
+app.get(
+    ['/posts-page', '/posts.html'],
+    serveHtml('posts.html')
+);
+
+
+
+// Protected pages
+app.get(
+    ['/dashboard', '/dashboard.html'],
+    requireAuth,
+    serveHtml('dashboard.html')
+);
+
+app.get(
+    ['/create_post', '/create_post.html'],
+    requireAuth,
+    serveHtml('create_post.html')
+);
+
+app.get(
+    ['/my_posts', '/my_posts.html'],
+    requireAuth,
+    serveHtml('my_posts.html')
+);
+
+app.get(
+    ['/settings', '/settings.html'],
+    requireAuth,
+    serveHtml('settings.html')
+);
+
+
+
+// CSRF error handling
 app.use((err, req, res, next) => {
+
     if (err.code === 'EBADCSRFTOKEN') {
-        return res.sendStatus(403);
+
+        return res.status(403).send('Forbidden');
     }
 
     console.error(err);
+
     res.sendStatus(500);
 });
 
+
+
+// 404 handler
+app.use((req, res) => {
+
+    res.status(404).send('Page not found');
+});
+
+
+
 app.listen(port, () => {
+
     console.log(`Server running on http://localhost:${port}`);
 });

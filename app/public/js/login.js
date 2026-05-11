@@ -1,9 +1,9 @@
 async function getCsrfToken() {
-    const res =
-        await fetch('/auth/csrf-token');
+    const res = await fetch('/auth/csrf-token', {
+        credentials: 'include'
+    });
 
-    const data =
-        await res.json();
+    const data = await res.json();
 
     return data.csrfToken;
 }
@@ -14,55 +14,69 @@ const form =
 const errorEl =
     document.getElementById('login_error');
 
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+if (form) {
 
-    errorEl.textContent = '';
+    form.addEventListener('submit', async (e) => {
 
-    try {
-        const csrfToken =
-            await getCsrfToken();
+        e.preventDefault();
 
-        const username =
-            document.getElementById('username').value;
+        errorEl.textContent = '';
 
-        const password =
-            document.getElementById('password').value;
+        try {
 
-        const totpCode =
-            document.getElementById('totp').value;
+            const csrfToken =
+                await getCsrfToken();
 
-        const res = await fetch('/auth/login', {
-            method: 'POST',
-            credentials: 'include',
+            const username =
+                document.getElementById('username').value;
 
-            headers: {
-                'Content-Type': 'application/json',
-                'x-csrf-token': csrfToken
-            },
+            const password =
+                document.getElementById('password').value;
 
-            body: JSON.stringify({
-                username,
-                password,
-                totpCode,
-                _csrf: csrfToken
-            })
-        });
+            const totpCode =
+                document.getElementById('totp').value;
 
-        if (res.ok) {
-            window.location.href = '/dashboard';
-            return;
+            const res = await fetch('/auth/login', {
+
+                method: 'POST',
+
+                credentials: 'include',
+
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken
+                },
+
+                body: JSON.stringify({
+                    username,
+                    password,
+                    totpCode,
+                    _csrf: csrfToken
+                })
+            });
+
+            if (res.ok) {
+
+                window.location.href =
+                    '/dashboard.html';
+
+                return;
+            }
+
+            const text =
+                await res.text();
+
+            errorEl.textContent =
+                text || 'Login failed';
+
         }
 
-        const text =
-            await res.text();
+        catch (err) {
 
-        errorEl.textContent =
-            text || 'Login failed';
+            console.error(err);
 
-    } catch (err) {
-        console.error(err);
-        errorEl.textContent =
-            'Network error';
-    }
-});
+            errorEl.textContent =
+                'Network error';
+        }
+    });
+}

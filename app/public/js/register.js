@@ -1,6 +1,9 @@
 async function getCsrfToken() {
+
     const res =
-        await fetch('/auth/csrf-token');
+        await fetch('/auth/csrf-token', {
+            credentials: 'include'
+        });
 
     const data =
         await res.json();
@@ -14,55 +17,69 @@ const form =
 const errorEl =
     document.getElementById('register_error');
 
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+if (form) {
 
-    errorEl.textContent = '';
+    form.addEventListener('submit', async (e) => {
 
-    try {
-        const csrfToken =
-            await getCsrfToken();
+        e.preventDefault();
 
-        const username =
-            document.getElementById('username').value;
+        errorEl.textContent = '';
 
-        const email =
-            document.getElementById('email').value;
+        try {
 
-        const password =
-            document.getElementById('password').value;
+            const csrfToken =
+                await getCsrfToken();
 
-        const res = await fetch('/auth/register', {
-            method: 'POST',
-            credentials: 'include',
+            const username =
+                document.getElementById('username').value;
 
-            headers: {
-                'Content-Type': 'application/json',
-                'x-csrf-token': csrfToken
-            },
+            const email =
+                document.getElementById('email').value;
 
-            body: JSON.stringify({
-                username,
-                email,
-                password,
-                _csrf: csrfToken
-            })
-        });
+            const password =
+                document.getElementById('password').value;
 
-        if (res.ok) {
-            window.location.href = '/login';
-            return;
+            const res = await fetch('/auth/register', {
+
+                method: 'POST',
+
+                credentials: 'include',
+
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken
+                },
+
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password,
+                    _csrf: csrfToken
+                })
+            });
+
+            if (res.ok) {
+
+                window.location.href =
+                    '/login.html';
+
+                return;
+            }
+
+            const text =
+                await res.text();
+
+            errorEl.textContent =
+                text || 'Registration failed';
+
         }
 
-        const text =
-            await res.text();
+        catch (err) {
 
-        errorEl.textContent =
-            text || 'Registration failed';
+            console.error(err);
 
-    } catch (err) {
-        console.error(err);
-        errorEl.textContent =
-            'Network error';
-    }
-});
+            errorEl.textContent =
+                'Network error';
+        }
+    });
+}
