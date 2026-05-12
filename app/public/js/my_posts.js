@@ -9,6 +9,54 @@
         return;
     }
 
+    // Create search bar element
+    const searchBar = document.createElement('input');
+    searchBar.type = 'text';
+    searchBar.placeholder = 'Search your posts...';
+    searchBar.className = 'search-bar';
+    searchBar.style.display = 'none'; // Hidden by default
+    searchBar.style.marginBottom = '1.5rem';
+
+    // Create no results message element
+    const noResultsMessage = document.createElement('div');
+    noResultsMessage.className = 'no-results-message';
+    noResultsMessage.textContent = 'No posts found matching your search.';
+    noResultsMessage.style.display = 'none';
+    noResultsMessage.style.textAlign = 'center';
+    noResultsMessage.style.padding = '2rem';
+    noResultsMessage.style.marginBottom = '1.5rem';
+
+    // Add both elements to container
+    container.appendChild(searchBar);
+    container.appendChild(noResultsMessage);
+
+    // Add search functionality immediately
+    searchBar.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const postCards = container.querySelectorAll('.blog-post');
+        let foundResults = false;
+
+        postCards.forEach(card => {
+            // Skip the loading message and search bar itself
+            if (card.querySelector('.blog-post-title')) {
+                const title = card.querySelector('.blog-post-title').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    foundResults = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+        });
+
+        // Show/hide no results message
+        if (searchTerm.trim() !== '') {
+            noResultsMessage.style.display = foundResults ? 'none' : 'block';
+        } else {
+            noResultsMessage.style.display = 'none';
+        }
+    });
+
     // Use event delegation for all post actions
     container.addEventListener('click', async (event) => {
         if (event.target.classList.contains('delete-btn')) {
@@ -49,8 +97,16 @@
                         <p>Start by creating your first post!</p>
                     </div>
                 `;
+                // Hide search bar when no posts
+                searchBar.style.display = 'none';
+                noResultsMessage.style.display = 'none';
                 return;
             }
+
+            // Show search bar when posts exist
+            container.appendChild(searchBar);
+            container.appendChild(noResultsMessage);
+            searchBar.style.display = 'block';
 
             // Create a fragment to improve performance
             const fragment = document.createDocumentFragment();

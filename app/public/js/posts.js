@@ -105,8 +105,6 @@ async function loadPosts() {
     }
 }
 
-
-
 function escapeHtml(text) {
 
     const div =
@@ -117,6 +115,90 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Add search functionality
+function setupSearch() {
+    const searchBar = document.getElementById('search-bar');
+    if (!searchBar) return;
 
+    let allPosts = [];
 
-loadPosts();
+    // Store original posts for filtering
+    async function storeOriginalPosts() {
+        try {
+            const response = await fetch('/posts', { credentials: 'include' });
+            if (response.ok) {
+                const posts = await response.json();
+                allPosts = posts;
+            }
+        } catch (err) {
+            console.error('Failed to load posts:', err);
+        }
+    }
+
+    // Filter posts based on search query
+    function filterPosts(query) {
+        if (!query.trim()) {
+            loadPosts(); // Reload original posts
+            return;
+        }
+
+        const filtered = allPosts.filter(post =>
+            post.title.toLowerCase().includes(query.toLowerCase()) ||
+            post.content.toLowerCase().includes(query.toLowerCase()) ||
+            (post.username && post.username.toLowerCase().includes(query.toLowerCase()))
+        );
+
+        displayFilteredPosts(filtered);
+    }
+
+    // Display filtered posts
+    function displayFilteredPosts(posts) {
+        const container = document.getElementById('posts_container');
+        if (!container) return;
+
+        if (posts.length === 0) {
+            container.innerHTML = `
+                <div class="no-results-message">
+                    <p>No discussions found matching your search.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = '';
+        posts.forEach(post => {
+            const postEl = document.createElement('div');
+            postEl.className = 'blog-post';
+            postEl.innerHTML = `
+                <div class="blog-post-header">
+                    <div>
+                        <h2 class="blog-post-title">
+                            ${escapeHtml(post.title)}
+                        </h2>
+                        <div class="blog-post-meta">
+                            Posted by
+                            ${escapeHtml(post.username || 'Unknown')}
+                        </div>
+                    </div>
+                </div>
+                <div class="blog-post-content">
+                    ${escapeHtml(post.content)}
+                </div>
+            `;
+            container.appendChild(postEl);
+        });
+    }
+
+    // Initialize search
+    storeOriginalPosts();
+
+    // Add event listener for real-time filtering
+    searchBar.addEventListener('input', (e) => {
+        filterPosts(e.target.value);
+    });
+}
+
+// Call setupSearch after loadPosts completes
+loadPosts().then(() => {
+    setupSearch();
+});
