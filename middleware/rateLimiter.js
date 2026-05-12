@@ -8,6 +8,7 @@ const loginLimiter = rateLimit({
     message: 'Too many login attempts. Try again later.',
     standardHeaders: true,
     legacyHeaders: false,
+    skipSuccessfulRequests: false,
 });
 
 const registerLimiter = rateLimit({
@@ -16,8 +17,10 @@ const registerLimiter = rateLimit({
     message: 'Too many registration attempts. Try again later.',
     standardHeaders: true,
     legacyHeaders: false,
+    skipSuccessfulRequests: false,
 });
 
-module.exports = loginLimiter;
-module.exports.loginLimiter = loginLimiter;
-module.exports.registerLimiter = registerLimiter;
+module.exports = {
+    loginLimiter,
+    registerLimiter
+};

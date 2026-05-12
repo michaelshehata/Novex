@@ -8,8 +8,7 @@ const pool = require('../database/database');
 const { decrypt } = require('../utils/encryptDB');
 const authRoutes = require('../auth/authRoutes');
 const postRoutes = require('../routes/postRoutes');
-const loginLimiter = require('../middleware/rateLimiter');
-const registerLimiter = loginLimiter.registerLimiter;
+const rateLimiter = require('../middleware/rateLimiter'); // Import the entire module
 const csrfProtection = require('../middleware/csrfProtection');
 
 const app = express();
@@ -47,8 +46,10 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/auth/login', loginLimiter);
-app.use('/auth/register', registerLimiter);
+
+// Use the specific rate limiters from the imported module
+app.use('/auth/login', rateLimiter.loginLimiter);
+app.use('/auth/register', rateLimiter.registerLimiter);
 app.use(csrfProtection);
 
 app.get('/auth/csrf-token', (req, res) => {
