@@ -18,16 +18,15 @@ test('Database should connect and execute a query successfully', async () => {
   console.log(result.rows);
 });
 
-test('Database query rowCount should equal expected value', async () => {
+test('Database query should return exactly one row for SELECT NOW()', async () => {
   const result = await pool.query('SELECT NOW()');
 
   // Confirm exactly one row returned for SELECT NOW()
   assert.strictEqual(result.rowCount, 1, 'Expected one row from NOW() query');
 });
 
-test('Database should throw on closed connection', async () => {
+test('Database should throw an error when attempting to query a closed connection', async () => {
   let errorThrown = false;
-  const originalConfig = pool.poolConfig;
 
   try {
     await pool.end();
@@ -35,9 +34,14 @@ test('Database should throw on closed connection', async () => {
     const result = await pool.query('SELECT NOW()');
     assert.fail('Expected query to throw on closed connection');
   } catch (err) {
+    console.log('=== ERROR DETAILS ===');
+    console.log('Error type:', typeof err);
+    console.log('Error message:', err.message || 'No message');
+    console.log('====================');
+
     errorThrown = true;
-    // Confirm error message contains "terminated" or similar
-    assert.ok(err.message && err.message.includes('terminated'), 'Error should include termination message');
+    // Check that the error message contains the expected text
+    assert.ok(err.message && err.message.includes('Cannot use a pool after calling end on the pool'), 'Error should include proper termination message');
   }
 
   assert.ok(errorThrown, 'Expected error to be thrown when querying a closed pool');
