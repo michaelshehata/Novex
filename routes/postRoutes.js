@@ -113,8 +113,9 @@ router.delete('/:id', requireAuth, async (req, res) => {
     }
 
     try {
+        // Fixed: Added explicit type conversion to ensure data type matching
         const result = await pool.query(
-            "DELETE FROM posts WHERE id = $1 AND user_id = $2",
+            "DELETE FROM posts WHERE id = $1 AND user_id = $2::integer",
             [postId, req.session.userId]
         );
 
@@ -124,7 +125,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
 
         res.send("Post deleted");
     } catch (err) {
-        console.error(err);
+        console.error('DELETE route error:', err);
         res.sendStatus(500);
     }
 });
