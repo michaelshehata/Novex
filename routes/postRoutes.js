@@ -10,29 +10,6 @@ function parsePostId(raw) {
     return Number.isInteger(n) && String(n) === String(raw) ? n : null;
 }
 
-router.get('/search', async (req, res) => {
-    const q = req.query.q;
-
-    if (typeof q !== 'string' || q.trim().length === 0) {
-        return res.status(400).send('Missing or empty q');
-    }
-
-    const term = `%${q.trim()}%`;
-
-    try {
-        const result = await pool.query(
-            `SELECT * FROM posts
-             WHERE title ILIKE $1 OR content ILIKE $1
-             ORDER BY id DESC`,
-            [term]
-        );
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
-});
-
 // GET all posts
 router.get('/', async (req, res) => {
     try {
