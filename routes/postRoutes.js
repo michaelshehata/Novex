@@ -3,7 +3,7 @@ const router = express.Router();
 
 const pool = require('../database/database');
 const requireAuth = require('../authentication/authMiddleware');
-const xssSanitizer = require('../middleware/xssSanitizer');
+const xssSanitiser = require('../middleware/xssSanitiser');
 
 function parsePostId(raw) {
     const n = Number.parseInt(raw, 10);
@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
 });
 
 // CREATE post (protected)
-router.post('/', requireAuth, xssSanitizer, async (req, res) => {
+router.post('/', requireAuth, xssSanitiser, async (req, res) => {
     const { title, content } = req.body;
 
     if (typeof title !== 'string' || title.length === 0 || title.length > 200) {
@@ -70,7 +70,7 @@ router.post('/', requireAuth, xssSanitizer, async (req, res) => {
 });
 
 // UPDATE post (protected + ownership check)
-router.put('/:id', requireAuth, xssSanitizer, async (req, res) => {
+router.put('/:id', requireAuth, xssSanitiser, async (req, res) => {
     const postId = parsePostId(req.params.id);
 
     if (postId === null) {

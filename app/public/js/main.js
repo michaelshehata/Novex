@@ -177,6 +177,4 @@ async function updateNavbar() {
     }
 }
 
-
-
 updateNavbar();
