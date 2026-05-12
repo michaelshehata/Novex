@@ -274,8 +274,6 @@ app.get(
     serveHtml('settings.html')
 );
 
-
-
 // CSRF error handling
 app.use((err, req, res, next) => {
 

@@ -56,6 +56,7 @@ exports.login = async (req, res) => {
       );
     };
 
+    // FakeHash implementation
     const fakeHash =
       process.env.FAKE_HASH;
 

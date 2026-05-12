@@ -1,13 +1,8 @@
 async function getCsrfToken() {
-
-    const res =
-        await fetch('/auth/csrf-token', {
-            credentials: 'include'
-        });
-
-    const data =
-        await res.json();
-
+    const res = await fetch('/auth/csrf-token', {
+        credentials: 'include'
+    });
+    const data = await res.json();
     return data.csrfToken;
 }
 
@@ -76,6 +71,10 @@ async function getCsrfToken() {
             await handleDeletePost(event);
         } else if (event.target.classList.contains('edit-btn')) {
             await handleEditPost(event);
+        } else if (event.target.classList.contains('save-btn')) {
+            await handleSaveEdit(event);
+        } else if (event.target.classList.contains('cancel-edit-btn')) {
+            await cancelEdit(event);
         }
     });
 
@@ -127,6 +126,7 @@ async function getCsrfToken() {
             mine.forEach(post => {
                 const card = document.createElement('div');
                 card.className = 'blog-post';
+                card.dataset.postId = post.id; // Store post ID on the card
 
                 card.innerHTML = `
                     <div class="blog-post-header">
@@ -167,8 +167,7 @@ async function getCsrfToken() {
             console.log('Delete cancelled by user');
             return;
         }
-        const csrfToken =
-            await getCsrfToken();
+        const csrfToken = await getCsrfToken();
 
         try {
             console.log('Sending DELETE request to /posts/' + postId);
@@ -201,10 +200,103 @@ async function getCsrfToken() {
         }
     }
 
+    // New edit functionality
     async function handleEditPost(event) {
         const postId = event.target.dataset.id;
-        console.log('Navigating to edit post:', postId);
-        window.location.href = `./edit_post.html?id=${postId}`;
+        console.log('Editing post:', postId);
+
+        // Find the parent blog post card
+        const postCard = event.target.closest('.blog-post');
+        if (!postCard) return;
+
+        // Get current title and content
+        const titleElement = postCard.querySelector('.blog-post-title');
+        const contentElement = postCard.querySelector('.blog-post-content');
+
+        const originalTitle = titleElement.textContent;
+        const originalContent = contentElement.innerHTML;
+
+        // Replace the content with edit form
+        postCard.innerHTML = `
+            <div class="edit-form">
+                <input type="text" class="edit-title-input" value="${originalTitle}" placeholder="Post Title">
+                <textarea class="edit-content-input" placeholder="Write your post content here...">${originalContent}</textarea>
+                <div class="edit-actions">
+                    <button class="post-btn save-btn" data-id="${postId}">Save</button>
+                    <button class="post-btn cancel-edit-btn" data-id="${postId}">Cancel</button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Save edited post
+    async function handleSaveEdit(event) {
+        const postId = event.target.dataset.id;
+        console.log('Saving edited post:', postId);
+
+        // Find the parent edit form
+        const editForm = event.target.closest('.edit-form');
+        if (!editForm) return;
+
+        const titleInput = editForm.querySelector('.edit-title-input');
+        const contentInput = editForm.querySelector('.edit-content-input');
+
+        const newTitle = titleInput.value.trim();
+        const newContent = contentInput.value.trim();
+
+        // Validate inputs
+        if (!newTitle || newTitle.length > 200) {
+            alert('Title must be between 1 and 200 characters');
+            return;
+        }
+
+        if (!newContent || newContent.length > 1000) {
+            alert('Content must be between 1 and 1000 characters');
+            return;
+        }
+
+        const csrfToken = await getCsrfToken();
+
+        try {
+            console.log('Sending PUT request to /posts/' + postId);
+
+            const res = await fetch(`/posts/${postId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    title: newTitle,
+                    content: newContent
+                })
+            });
+
+            console.log('Update response status:', res.status);
+            const responseText = await res.text();
+            console.log('Update response text:', responseText);
+
+            if (res.ok) {
+                console.log('Post updated successfully');
+                // Reload posts to show updated content
+                await loadPosts();
+                alert('Post updated successfully!');
+            } else {
+                console.error('Update failed with status:', res.status, 'Response:', responseText);
+                throw new Error(`Failed to update post: ${res.status} - ${responseText}`);
+            }
+        } catch (error) {
+            console.error('Error updating post:', error);
+            alert('Failed to update post. Please try again.\n' + error.message);
+        }
+    }
+
+    // Cancel edit
+    async function cancelEdit(event) {
+        console.log('Canceling edit');
+        // Simply reload posts to restore original content
+        await loadPosts();
     }
 
     await loadPosts();
