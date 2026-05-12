@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const pool = require('../database/database');
-const requireAuth = require('../authentication/authMiddleware');
+const requireAuth = require('../auth/authMiddleware');
 const xssSanitiser = require('../middleware/xssSanitiser');
 
 function parsePostId(raw) {

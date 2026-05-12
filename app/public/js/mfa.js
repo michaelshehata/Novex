@@ -129,7 +129,7 @@ async function initMfaPanel() {
         if (enabled === true) {
 
             statusEl.textContent =
-                'Two-factor authentication is ENABLED on your account.';
+                'Two-factor auth is ENABLED on your account.';
 
             startBtn.hidden = true;
 
@@ -141,7 +141,7 @@ async function initMfaPanel() {
         else {
 
             statusEl.textContent =
-                'Two-factor authentication is DISABLED on your account.';
+                'Two-factor auth is DISABLED on your account.';
 
             startBtn.hidden = false;
 
@@ -316,7 +316,7 @@ async function initMfaPanel() {
 
             showMessage(
                 msgEl,
-                'Two-factor authentication enabled successfully.'
+                'Two-factor auth enabled successfully.'
             );
 
         }
@@ -425,7 +425,7 @@ async function initMfaPanel() {
 
             showMessage(
                 msgEl,
-                'Two-factor authentication disabled.'
+                'Two-factor auth disabled.'
             );
 
         }

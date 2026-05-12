@@ -1,10 +1,10 @@
-// Handles authentication routes like login and registration. Also provides a route to get the CSRF token for forms.
+// Handles auth routes like login and registration. Also provides a route to get the CSRF token for forms.
 
 const express = require('express');
 const router = express.Router();
 
 const authController = require('./authController');
-const mfaController = require('./mfaController');
+const mfaController = require('../middleware/mfaController');
 const requireAuth = require('./authMiddleware');
 
 router.get('/csrf-token', (req, res) => {

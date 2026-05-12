@@ -15,11 +15,11 @@ const pool = require('../database/database');
 
 
 // Utilities
-const { decrypt } = require('../utils/encrypt_db');
+const { decrypt } = require('../utils/encryptDB');
 
 
 // Routes
-const authRoutes = require('../authentication/authRoutes');
+const authRoutes = require('../auth/authRoutes');
 const postRoutes = require('../routes/postRoutes');
 
 

@@ -2,8 +2,8 @@ const { authenticator } = require('otplib');
 const QRCode = require('qrcode');
 
 const pool = require('../database/database');
-const { encrypt } = require('../utils/encrypt_db');
-const { verifyPassword } = require('../utils/hashing');
+const { encrypt } = require('../utils/encryptDB');
+const { verifyPassword } = require('../utils/hashPassword');
 
 const TOTP_OPTIONS = {
   strategy: 'totp',

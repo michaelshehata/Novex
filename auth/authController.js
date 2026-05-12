@@ -1,8 +1,8 @@
 const { authenticator } = require('otplib');
 
 const pool = require('../database/database');
-const { encrypt, decrypt } = require('../utils/encrypt_db');
-const { hashPassword, verifyPassword } = require('../utils/hashing');
+const { encrypt, decrypt } = require('../utils/encryptDB');
+const { hashPassword, verifyPassword } = require('../utils/hashPassword');
 
 const TOTP_OPTIONS = {
   strategy: 'totp',

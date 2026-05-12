@@ -7,8 +7,8 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const pool = require('../database/database');
-const { encrypt } = require('../utils/encrypt_db');
-const { hashPassword } = require('../utils/hashing');
+const { encrypt } = require('../utils/encryptDB');
+const { hashPassword } = require('../utils/hashPassword');
 
 async function main() {
   const username = process.argv[2];

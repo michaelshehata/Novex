@@ -8,8 +8,8 @@ process.env.ENCRYPTION_KEY =
 process.env.PASSWORD_PEPPER = process.env.PASSWORD_PEPPER || '';
 
 
-const { encrypt, decrypt } = require('../utils/encrypt_db');
-const { hashPassword, verifyPassword } = require('../utils/hashing');
+const { encrypt, decrypt } = require('../utils/encryptDB');
+const { hashPassword, verifyPassword } = require('../utils/hashPassword');
 
 test('encrypt / decrypt round-trip for email-shaped text', () => {
   const plain = 'participant1@example.local';
