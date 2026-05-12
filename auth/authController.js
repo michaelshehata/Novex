@@ -28,8 +28,9 @@ exports.login = async (req, res) => {
 
     const result = await pool.query(
 
-      `SELECT id, username, password, totp_secret, totp_enabled
-       FROM users 
+      `SELECT id, username, password, totp_secret, totp_enabled,
+              failed_login_attempts, lock_until
+       FROM users
        WHERE username = $1`,
 
       [username]
@@ -37,11 +38,31 @@ exports.login = async (req, res) => {
 
     const user = result.rows[0];
 
+    const LOCKOUT_THRESHOLD = 5;
+    const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
+
+    const recordFailedAttempt = async (u) => {
+      const lockExpired = u.lock_until && new Date() >= new Date(u.lock_until);
+      const base = lockExpired ? 0 : u.failed_login_attempts;
+      const newCount = base + 1;
+      const lockUntil = newCount >= LOCKOUT_THRESHOLD
+        ? new Date(Date.now() + LOCKOUT_DURATION_MS)
+        : null;
+
+      await pool.query(
+        `UPDATE users SET failed_login_attempts = $1, lock_until = $2 WHERE id = $3`,
+        [newCount, lockUntil, u.id]
+      );
+    };
+
     const fakeHash =
       process.env.FAKE_HASH;
 
     const passwordToCheck =
       user ? user.password : fakeHash;
+
+    // Always run hash check first to keep response time the same regardless of if accounts exists (stops timing attacks)
 
     const valid =
       await verifyPassword(
@@ -49,8 +70,17 @@ exports.login = async (req, res) => {
         password
       );
 
-    if (!user || !valid) {
+    // Checks lockout after timing safe hash (avoids early return stopping timing attacks))
 
+    if (user && user.lock_until && new Date() < new Date(user.lock_until)) {
+      return res
+        .status(401)
+        .send('Account temporarily locked due to too many failed attempts. Please try again later.');
+        
+    }
+
+    if (!user || !valid) {
+      if (user) await recordFailedAttempt(user);
       return res
         .status(401)
         .send('Invalid username or password');
@@ -92,12 +122,18 @@ exports.login = async (req, res) => {
 
       // Generic auth failure avoids enumeration
       if (!totpOk) {
-
+        await recordFailedAttempt(user);
         return res
           .status(401)
           .send('Invalid username or password');
       }
     }
+
+    // Successful login and clears any failed attempts
+    await pool.query(
+      `UPDATE users SET failed_login_attempts = 0, lock_until = NULL WHERE id = $1`,
+      [user.id]
+    );
 
     // Regenerate session to prevent fixation
     req.session.regenerate((err) => {
