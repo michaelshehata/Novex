@@ -27,8 +27,8 @@
     if (mfa) {
         mfa.textContent =
             session.totpEnabled
-                ? 'Enabled'
-                : 'Disabled';
+                ? 'MFA: Enabled'
+                : 'MFA: Disabled';
     }
 
 })();
