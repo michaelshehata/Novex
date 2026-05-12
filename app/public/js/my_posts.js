@@ -1,3 +1,16 @@
+async function getCsrfToken() {
+
+    const res =
+        await fetch('/auth/csrf-token', {
+            credentials: 'include'
+        });
+
+    const data =
+        await res.json();
+
+    return data.csrfToken;
+}
+
 (async () => {
     const session = await protectPage();
     if (!session) return;
@@ -154,6 +167,8 @@
             console.log('Delete cancelled by user');
             return;
         }
+        const csrfToken =
+            await getCsrfToken();
 
         try {
             console.log('Sending DELETE request to /posts/' + postId);
@@ -162,6 +177,7 @@
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken
                 },
                 credentials: 'include'
             });
