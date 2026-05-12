@@ -274,6 +274,12 @@ app.get(
     serveHtml('settings.html')
 );
 
+app.get(
+    ['/edit_post', '/edit_post.html'],
+    requireAuth,
+    serveHtml('edit_post.html')
+);
+
 
 
 // CSRF error handling

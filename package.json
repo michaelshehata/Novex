@@ -1,13 +1,14 @@
 {
   "scripts": {
+    "start": "node app/app.js",
+    "test": "node --test tests/unit.test.js",
     "measure-login": "node scripts/login_times.js",
     "db:test": "node test_scripts/database_test.js",
     "db:seed-user": "node scripts/seed_user.js"
   },
-  "devDependencies": {
-    "express": "^4.21.1"
-  },
+  "devDependencies": {},
   "dependencies": {
+    "express": "^4.21.1",
     "argon2": "^0.44.0",
     "cookie-parser": "^1.4.7",
     "csrf-csrf": "^4.0.3",

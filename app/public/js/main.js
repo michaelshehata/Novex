@@ -26,11 +26,21 @@ async function logout() {
 
     try {
 
+        const csrfRes = await fetch('/auth/csrf-token', { credentials: 'include' });
+        const { csrfToken } = await csrfRes.json();
+
         await fetch('/logout', {
 
             method: 'POST',
 
-            credentials: 'include'
+            credentials: 'include',
+
+            headers: {
+                'Content-Type': 'application/json',
+                'x-csrf-token': csrfToken
+            },
+
+            body: JSON.stringify({ _csrf: csrfToken })
         });
 
     }

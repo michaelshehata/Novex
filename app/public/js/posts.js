@@ -1,4 +1,4 @@
-async function loadPosts() {
+async function loadPosts(searchQuery) {
 
     const container =
         document.getElementById('posts_container');
@@ -7,10 +7,14 @@ async function loadPosts() {
         return;
     }
 
+    const url = searchQuery
+        ? `/posts/search?q=${encodeURIComponent(searchQuery)}`
+        : '/posts';
+
     try {
 
         const response =
-            await fetch('/posts', {
+            await fetch(url, {
                 credentials: 'include'
             });
 
@@ -120,3 +124,32 @@ function escapeHtml(text) {
 
 
 loadPosts();
+
+const searchBtn = document.getElementById('search_btn');
+const clearBtn = document.getElementById('clear_search_btn');
+const searchInput = document.getElementById('search_input');
+
+if (searchBtn && searchInput) {
+
+    searchBtn.addEventListener('click', () => {
+        const q = searchInput.value.trim();
+        if (q.length === 0) return;
+        clearBtn.style.display = 'inline-block';
+        loadPosts(q);
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const q = searchInput.value.trim();
+            if (q.length === 0) return;
+            clearBtn.style.display = 'inline-block';
+            loadPosts(q);
+        }
+    });
+
+    clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        clearBtn.style.display = 'none';
+        loadPosts();
+    });
+}

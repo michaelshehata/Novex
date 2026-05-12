@@ -1,3 +1,9 @@
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 (async () => {
     const session = await protectPage();
     if (!session) return;
@@ -62,14 +68,14 @@
                 card.innerHTML = `
                     <div class="blog-post-header">
                         <div>
-                            <h2 class="blog-post-title">${post.title}</h2>
+                            <h2 class="blog-post-title">${escapeHtml(post.title)}</h2>
                             <div class="blog-post-meta">
                                 Posted ${new Date(post.created_at || post.updated_at).toLocaleDateString()} • Secure Session Verified
                             </div>
                         </div>
                     </div>
                     <div class="blog-post-content">
-                        ${post.content}
+                        ${escapeHtml(post.content)}
                     </div>
                     <div class="post-actions">
                         <button class="post-btn edit-btn" data-id="${post.id}">Edit</button>
@@ -102,10 +108,16 @@
         try {
             console.log('Sending DELETE request to /posts/' + postId);
 
+            // Fetch CSRF token before every state changing request
+            const csrfRes   = await fetch('/auth/csrf-token', { credentials: 'include' });
+            const csrfData  = await csrfRes.json();
+            const csrfToken = csrfData.csrfToken;
+
             const res = await fetch(`/posts/${postId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-csrf-token': csrfToken
                 },
                 credentials: 'include'
             });
@@ -132,7 +144,7 @@
     async function handleEditPost(event) {
         const postId = event.target.dataset.id;
         console.log('Navigating to edit post:', postId);
-        window.location.href = `./edit_post.html?id=${postId}`;
+        window.location.href = `/edit_post?id=${postId}`;
     }
 
     await loadPosts();

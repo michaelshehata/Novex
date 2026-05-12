@@ -1,3 +1,9 @@
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 async function loadLatestPosts() {
 
     try {
@@ -21,10 +27,10 @@ async function loadLatestPosts() {
 
             postCard.innerHTML = `
 
-        <h3>${post.title}</h3>
+        <h3>${escapeHtml(post.title)}</h3>
 
         <p class="muted">
-          ${post.content.substring(0, 120)}...
+          ${escapeHtml(post.content.substring(0, 120))}...
         </p>
 
       `;

@@ -4,11 +4,7 @@ const router = express.Router();
 const pool = require('../database/database');
 const requireAuth = require('../auth/authMiddleware');
 const xssSanitiser = require('../middleware/xssSanitiser');
-
-function parsePostId(raw) {
-    const n = Number.parseInt(raw, 10);
-    return Number.isInteger(n) && String(n) === String(raw) ? n : null;
-}
+const parsePostId = require('../utils/parsePostId');
 
 router.get('/search', async (req, res) => {
     const q = req.query.q;
@@ -21,9 +17,11 @@ router.get('/search', async (req, res) => {
 
     try {
         const result = await pool.query(
-            `SELECT * FROM posts
-             WHERE title ILIKE $1 OR content ILIKE $1
-             ORDER BY id DESC`,
+            `SELECT posts.*, users.username
+             FROM posts
+             LEFT JOIN users ON posts.user_id = users.id
+             WHERE posts.title ILIKE $1 OR posts.content ILIKE $1
+             ORDER BY posts.id DESC`,
             [term]
         );
         res.json(result.rows);
@@ -36,8 +34,38 @@ router.get('/search', async (req, res) => {
 // GET all posts
 router.get('/', async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM posts ORDER BY id DESC");
+        const result = await pool.query(
+            `SELECT posts.*, users.username
+             FROM posts
+             LEFT JOIN users ON posts.user_id = users.id
+             ORDER BY posts.id DESC`
+        );
         res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+});
+ 
+// GET single post by id (only owners can access))
+router.get('/:id', requireAuth, async (req, res) => {
+    const postId = parsePostId(req.params.id);
+
+    if (postId === null) {
+        return res.status(400).send('Invalid post id');
+    }
+
+    try {
+        const result = await pool.query(
+            'SELECT * FROM posts WHERE id = $1 AND user_id = $2',
+            [postId, req.session.userId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).send('Post not found');
+        }
+
+        res.json(result.rows[0]);
     } catch (err) {
         console.error(err);
         res.sendStatus(500);
