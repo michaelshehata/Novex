@@ -133,7 +133,7 @@ async function getCsrfToken() {
                         <div>
                             <h2 class="blog-post-title">${post.title}</h2>
                             <div class="blog-post-meta">
-                                Posted ${new Date(post.created_at || post.updated_at).toLocaleDateString()} • Secure Session Verified
+                                Posted ${new Date(post.created_at || post.updated_at).toLocaleDateString()}
                             </div>
                         </div>
                     </div>
