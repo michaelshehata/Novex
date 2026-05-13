@@ -34,10 +34,9 @@ test('Database should throw an error when attempting to query a closed connectio
     const result = await pool.query('SELECT NOW()');
     assert.fail('Expected query to throw on closed connection');
   } catch (err) {
-    console.log('=== ERROR DETAILS ===');
     console.log('Error type:', typeof err);
     console.log('Error message:', err.message || 'No message');
-    console.log('====================');
+
 
     errorThrown = true;
     // Check that the error message contains the expected text

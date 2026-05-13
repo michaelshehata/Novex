@@ -11,7 +11,7 @@ const { encrypt, decrypt } = require('../utils/encryptDB');
 const { hashPassword, verifyPassword } = require('../utils/hashPassword');
 
 test('Encryption/Decryption round-trip should successfully encode and decode email-shaped text', () => {
-  console.log('=== Testing Encryption/Decryption Round-trip ===');
+  console.log('Testing Encryption/Decryption');
   const plain = 'participant1@example.local';
   console.log('Original plaintext:', plain);
 
@@ -29,7 +29,7 @@ test('Encryption/Decryption round-trip should successfully encode and decode ema
 });
 
 test('Password hashing should generate valid hash and correctly verify matching/incorrect passwords', async () => {
-  console.log('\n=== Testing Password Hashing and Verification ===');
+  console.log('\nTesting Password Hashing and Verification');
   const password = 'UnitTest1a';
   console.log('Original password:', password);
 

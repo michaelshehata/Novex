@@ -21,7 +21,7 @@ app.use(helmet({
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'"],
             objectSrc: ["'none'"],
-            upgradeInsecureRequests: [],
+            upgradeInsecureRequests: [], // NO EXTERNAL SCRIPTS OR EMBEDDED OBJECTS OTHER THAN SOURCE
         },
     }
 }));
