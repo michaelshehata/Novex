@@ -8,7 +8,7 @@ const pool = require('../database/database');
 const { decrypt } = require('../utils/encryptDB');
 const authRoutes = require('../auth/authRoutes');
 const postRoutes = require('../routes/postRoutes');
-const rateLimiter = require('../middleware/rateLimiter'); // Import the entire module
+const rateLimiter = require('../middleware/rateLimiter');
 const csrfProtection = require('../middleware/csrfProtection');
 const { hashPassword, verifyPassword } = require('../utils/hashPassword');
 
@@ -57,13 +57,9 @@ app.get('/auth/csrf-token', (req, res) => {
     res.json({ csrfToken: req.csrfToken() });
 });
 
-// Add this route for password updates (place it before the error handlers)
+// Add this route for password updates
 app.post('/api/update-password', csrfProtection, async (req, res) => {
     try {
-        console.log('Password update request received:', req.body);
-        console.log('Session user ID:', req.session.userId);
-
-        // Check if user is authenticated
         if (!req.session.userId) {
             return res.status(401).json({
                 success: false,
@@ -73,10 +69,6 @@ app.post('/api/update-password', csrfProtection, async (req, res) => {
 
         const { currentPassword, newPassword, mfaCode } = req.body;
 
-        console.log('Request data - currentPassword:', !!currentPassword);
-        console.log('Request data - newPassword:', !!newPassword);
-
-        // Validate input
         if (!currentPassword || !newPassword) {
             return res.status(400).json({
                 success: false,
@@ -91,7 +83,6 @@ app.post('/api/update-password', csrfProtection, async (req, res) => {
             });
         }
 
-        // Get user from database
         const userResult = await pool.query(
             `
                 SELECT id, username, email, password, totp_enabled
@@ -100,8 +91,6 @@ app.post('/api/update-password', csrfProtection, async (req, res) => {
             `,
             [req.session.userId]
         );
-
-        console.log('Database query result rows:', userResult.rows.length);
 
         if (userResult.rows.length === 0) {
             return res.status(404).json({
@@ -112,12 +101,7 @@ app.post('/api/update-password', csrfProtection, async (req, res) => {
 
         const user = userResult.rows[0];
 
-        console.log('User found - totp_enabled:', user.totp_enabled);
-
-        // Verify current password
         const isPasswordValid = await verifyPassword(user.password, currentPassword);
-
-        console.log('Password verification result:', isPasswordValid);
 
         if (!isPasswordValid) {
             return res.status(400).json({
@@ -126,12 +110,8 @@ app.post('/api/update-password', csrfProtection, async (req, res) => {
             });
         }
 
-        // Hash the new password
         const newPasswordHash = await hashPassword(newPassword);
 
-        console.log('New password hashed successfully');
-
-        // Update the password in database - using 'password' column name as per schema
         await pool.query(
             `
                 UPDATE users
@@ -140,8 +120,6 @@ app.post('/api/update-password', csrfProtection, async (req, res) => {
             `,
             [newPasswordHash, req.session.userId]
         );
-
-        console.log('Password updated successfully in database');
 
         res.json({
             success: true,
