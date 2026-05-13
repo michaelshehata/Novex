@@ -15,7 +15,7 @@
     }
 
     if (mfa) {
-        mfa.textContent = session.totpEnabled ? 'Enabled' : 'Disabled';
+        mfa.textContent = session.totpEnabled ? 'MFA Enabled.' : 'MFA Disabled.';
     }
 
     // Password editing logic
