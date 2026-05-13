@@ -10,6 +10,7 @@ const authRoutes = require('../auth/authRoutes');
 const postRoutes = require('../routes/postRoutes');
 const rateLimiter = require('../middleware/rateLimiter'); // Import the entire module
 const csrfProtection = require('../middleware/csrfProtection');
+const { hashPassword, verifyPassword } = require('../utils/hashPassword');
 
 const app = express();
 const port = 3000;
@@ -54,6 +55,107 @@ app.use(csrfProtection);
 
 app.get('/auth/csrf-token', (req, res) => {
     res.json({ csrfToken: req.csrfToken() });
+});
+
+// Add this route for password updates (place it before the error handlers)
+app.post('/api/update-password', csrfProtection, async (req, res) => {
+    try {
+        console.log('Password update request received:', req.body);
+        console.log('Session user ID:', req.session.userId);
+
+        // Check if user is authenticated
+        if (!req.session.userId) {
+            return res.status(401).json({
+                success: false,
+                message: 'Unauthorized'
+            });
+        }
+
+        const { currentPassword, newPassword, mfaCode } = req.body;
+
+        console.log('Request data - currentPassword:', !!currentPassword);
+        console.log('Request data - newPassword:', !!newPassword);
+
+        // Validate input
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Current password and new password are required'
+            });
+        }
+
+        if (newPassword.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: 'New password must be at least 8 characters long'
+            });
+        }
+
+        // Get user from database
+        const userResult = await pool.query(
+            `
+                SELECT id, username, email, password, totp_enabled
+                FROM users
+                WHERE id = $1
+            `,
+            [req.session.userId]
+        );
+
+        console.log('Database query result rows:', userResult.rows.length);
+
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const user = userResult.rows[0];
+
+        console.log('User found - totp_enabled:', user.totp_enabled);
+
+        // Verify current password
+        const isPasswordValid = await verifyPassword(user.password, currentPassword);
+
+        console.log('Password verification result:', isPasswordValid);
+
+        if (!isPasswordValid) {
+            return res.status(400).json({
+                success: false,
+                message: 'Current password is incorrect'
+            });
+        }
+
+        // Hash the new password
+        const newPasswordHash = await hashPassword(newPassword);
+
+        console.log('New password hashed successfully');
+
+        // Update the password in database - using 'password' column name as per schema
+        await pool.query(
+            `
+                UPDATE users
+                SET password = $1
+                WHERE id = $2
+            `,
+            [newPasswordHash, req.session.userId]
+        );
+
+        console.log('Password updated successfully in database');
+
+        res.json({
+            success: true,
+            message: 'Password updated successfully'
+        });
+
+    } catch (error) {
+        console.error('Complete password update error:', error);
+        console.error('Error stack:', error.stack);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update password: ' + error.message
+        });
+    }
 });
 
 app.use('/auth', authRoutes);
